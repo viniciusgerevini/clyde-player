@@ -1,12 +1,7 @@
 import { useState } from "react";
 import "./FileBar.css";
 import { open } from "@tauri-apps/plugin-dialog";
-// import { readTextFile, BaseDirectory } from '@tauri-apps/plugin-fs';
 
-// const configToml = await readTextFile('config.toml', {
-//   baseDir: BaseDirectory.AppConfig,
-// });
-//
 interface FileBarParams {
   onFileOpen: (filePath: string) => void;
 }
@@ -36,7 +31,6 @@ export function FileBar({ onFileOpen }: FileBarParams) {
 
   return (
     <div className="file-bar">
-      <div className="status">S</div>
       <div className="filename">{openFilePath}</div>
       <button className="file-menu" onClick={openFile}>
         Open

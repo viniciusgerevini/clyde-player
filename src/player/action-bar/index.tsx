@@ -1,25 +1,46 @@
+import { useState } from "react";
+
 interface PlayerActionBarParams {
   isDialogueAvailable: boolean;
+  blocks: string[];
   onRestart: () => void;
   onNext: () => void;
   onForward: () => void;
   onAutoMode: () => void;
   onClearMemory: () => void;
   onToggleDebugPanel: () => void;
+  onBlockSelected: (blockName: string) => void;
 }
 
 export function PlayerActionBar({
   isDialogueAvailable,
+  blocks,
   onRestart,
   onNext,
   onForward,
   onAutoMode,
   onClearMemory,
   onToggleDebugPanel,
+  onBlockSelected,
 }: PlayerActionBarParams) {
+  const [selectedBlock, setSelectedBlock] = useState("");
+
+  const onBlockSelectChanged = (e: any) => {
+    setSelectedBlock(e.target.value);
+    onBlockSelected(e.target.value);
+  };
+
   return (
     <div>
-      <select disabled={!isDialogueAvailable}></select>
+      <select
+        className="block-selector"
+        disabled={!isDialogueAvailable}
+        onChange={onBlockSelectChanged}
+        value={selectedBlock}
+      >
+        <option key="default" value="">Default</option>
+        { blocks.map((b) => <option key={b} value={b}>{b}</option>)}
+      </select>
       <button onClick={onRestart} disabled={!isDialogueAvailable}>
         Restart
       </button>

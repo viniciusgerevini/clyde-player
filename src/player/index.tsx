@@ -42,6 +42,10 @@ export function Player({ dialoguePath }: PlayerParams) {
 
   const isDialogueAvailable = currentDialoguePath !== "";
 
+  const blocks = useMemo(() => {
+    return parsedDoc.blocks.map(b => b.name);
+  }, [parsedDoc.blocks]);
+
   // TODO is parsing / background parsing
 
   useEffect(() => {
@@ -159,6 +163,12 @@ export function Player({ dialoguePath }: PlayerParams) {
 
   const onToggleDebugPanel = () => {};
 
+  const onBlockSelected = (blockName: string) => {
+    interpreter.start(blockName);
+    resetToDefault();
+    addToEntries({ type: "event", text: `Block selected: ${blockName === "" ? "Default" : blockName }` });
+  }
+
   const onOptionSelected = (optionIndex: number) => {
     if (!isWaitingForChoice) {
       return;
@@ -173,6 +183,8 @@ export function Player({ dialoguePath }: PlayerParams) {
     <div className="player-container">
       <PlayerActionBar
         isDialogueAvailable={isDialogueAvailable}
+        blocks={blocks}
+        onBlockSelected={onBlockSelected}
         onRestart={onRestart}
         onNext={onNext}
         onForward={onForward}
@@ -186,7 +198,7 @@ export function Player({ dialoguePath }: PlayerParams) {
         })}
         <div ref={bottomRef}></div>
       </div>
-      <div className="player-status">Status</div>
+      <div className="player-status">{fileHandler.getParseState()}</div>
     </div>
   );
 }
