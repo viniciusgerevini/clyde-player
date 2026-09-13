@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { readTextFile, watch } from '@tauri-apps/plugin-fs';
+import { readTextFile, watch } from "@tauri-apps/plugin-fs";
 import { parse, ClydeDocumentRoot, UnexpectedTokenError } from "@clyde-lang/parser";
-import { useDebouncedCallback } from 'use-debounce';
+import { useDebouncedCallback } from "use-debounce";
 
 interface DialogueFileHandler {
   getContent: () => string;
@@ -11,9 +11,9 @@ interface DialogueFileHandler {
 }
 
 export function useDialogueFileHandler(filePath: string): DialogueFileHandler {
-  const [fileContent, setFileContent ] = useState("");
-  const [parsedDocument, setParsedDocument ] = useState<ClydeDocumentRoot>(new ClydeDocumentRoot());
-  const [lastError, setParseError ] = useState<UnexpectedTokenError | Error | undefined>();
+  const [fileContent, setFileContent] = useState("");
+  const [parsedDocument, setParsedDocument] = useState<ClydeDocumentRoot>(new ClydeDocumentRoot());
+  const [lastError, setParseError] = useState<UnexpectedTokenError | Error | undefined>();
 
   const loadFileDebounced = useDebouncedCallback(async (filePath: string) => {
     try {
@@ -43,11 +43,11 @@ export function useDialogueFileHandler(filePath: string): DialogueFileHandler {
       },
       {
         delayMs: 200,
-      }
+      },
     ).catch((e) => {
-        console.error("Error while watching file", e)
+      console.error("Error while watching file", e);
     });
-  }, [ filePath ]);
+  }, [filePath]);
 
   return {
     getContent() {
@@ -61,6 +61,6 @@ export function useDialogueFileHandler(filePath: string): DialogueFileHandler {
     },
     getParseError() {
       return lastError;
-    }
-  }
+    },
+  };
 }

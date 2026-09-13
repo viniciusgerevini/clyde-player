@@ -66,13 +66,12 @@
           font-family: var(--default-font);
         }
 
-        &.selected, &.selected:hover {
+        &.selected,
+        &.selected:hover {
           font-family: var(--default-font-bolder);
           color: var(--text-color);
         }
       }
-
     }
-
   }
 }

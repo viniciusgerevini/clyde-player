@@ -6,8 +6,10 @@
   --end-color: #ffd4c1;
   --event-color: #fdf0d3;
 
-
-  --default-font: "Inconsolata", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --default-font:
+    "Inconsolata", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+    "Noto Color Emoji";
 
   --default-font-bolder: "Inconsolata-Bold";
 
@@ -26,7 +28,8 @@
   -webkit-text-size-adjust: 100%;
 }
 
-html, body {
+html,
+body {
   height: 100%;
 }
 
@@ -43,21 +46,23 @@ html, body {
 }
 
 @font-face {
-      font-family: 'Inconsolata';
-      src:url('/fonts/Inconsolata.ttf.woff') format('woff'),
-          url('/fonts/Inconsolata.ttf.svg#Inconsolata') format('svg'),
-          url('/fonts/Inconsolata.ttf.eot'),
-          url('/fonts/Inconsolata.ttf.eot?#iefix') format('embedded-opentype'); 
-        font-weight: normal;
-      font-style: normal;
+  font-family: "Inconsolata";
+  src:
+    url("/fonts/Inconsolata.ttf.woff") format("woff"),
+    url("/fonts/Inconsolata.ttf.svg#Inconsolata") format("svg"),
+    url("/fonts/Inconsolata.ttf.eot"),
+    url("/fonts/Inconsolata.ttf.eot?#iefix") format("embedded-opentype");
+  font-weight: normal;
+  font-style: normal;
 }
 
 @font-face {
-      font-family: 'Inconsolata-Bold';
-      src:url('/fonts/Inconsolata-Bold.ttf.woff') format('woff'),
-          url('/fonts/Inconsolata-Bold.ttf.svg#Inconsolata-Bold') format('svg'),
-          url('/fonts/Inconsolata-Bold.ttf.eot'),
-          url('/fonts/Inconsolata-Bold.ttf.eot?#iefix') format('embedded-opentype'); 
-        font-weight: normal;
-      font-style: normal;
+  font-family: "Inconsolata-Bold";
+  src:
+    url("/fonts/Inconsolata-Bold.ttf.woff") format("woff"),
+    url("/fonts/Inconsolata-Bold.ttf.svg#Inconsolata-Bold") format("svg"),
+    url("/fonts/Inconsolata-Bold.ttf.eot"),
+    url("/fonts/Inconsolata-Bold.ttf.eot?#iefix") format("embedded-opentype");
+  font-weight: normal;
+  font-style: normal;
 }

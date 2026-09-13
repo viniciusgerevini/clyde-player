@@ -1,9 +1,13 @@
 {
   "name": "clyde-player",
-  "private": true,
   "version": "0.1.0",
+  "private": true,
   "type": "module",
   "scripts": {
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
@@ -25,6 +29,8 @@
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "@vitejs/plugin-react": "^6.0.2",
+    "oxfmt": "^0.67.0",
+    "oxlint": "^1.82.0",
     "typescript": "~6.0.3",
     "vite": "^8.0.16"
   }

@@ -22,7 +22,7 @@ function App() {
 
   const onFileOpen = (filePath: string) => {
     setDialogueFilePath(filePath);
- };
+  };
 
   return (
     <main className="container">
