@@ -1,0 +1,15 @@
+.file-bar {
+  display: flex;
+}
+
+.status {
+
+}
+
+.filename {
+  flex-grow: 1;
+}
+
+.file-menu {
+
+}
