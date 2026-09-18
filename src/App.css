@@ -1,5 +1,21 @@
+@import "tailwindcss";
+@plugin "daisyui" {
+  themes: all;
+};
+
+html,
+body {
+  height: 100%;
+  overscroll-behavior: none;
+}
+
+#root {
+  height: 100%;
+  padding: 5px 5px 0px;
+}
+
+/*
 :root {
-  /* --bg-color: #fef7e7; */
   --bg-color: #fefefe;
   --text-color: #1d1d1d;
   --accent-color: #ffd589;
@@ -26,15 +42,6 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
-}
-
-html,
-body {
-  height: 100%;
-}
-
-#root {
-  height: 100%;
 }
 
 .container {
@@ -66,3 +73,4 @@ body {
   font-weight: normal;
   font-style: normal;
 }
+*/

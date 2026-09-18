@@ -1,33 +1,28 @@
 import { useState } from "react";
 // import { invoke } from "@tauri-apps/api/core";
-import "./reset.css";
 import "./App.css";
 import { FileBar } from "./file-bar";
-import { Player } from "./player";
+import { Player } from "./player/player";
+import { ParseState } from "./file/useFileHandler";
 
-// TODO open file,
-// TODO get file content
-// TODO parse file
-// TODO parse error display
-// TODO interpreter
-// TODO file panel (show text? Syntax highlighting?)
-
+// c-n - next line
+// c-j c-k options
+// <c-y> accept
+// <c-r> restart
+// c-p poltergeist
+// c-b debugger
 function App() {
   const [dialogueFilePath, setDialogueFilePath] = useState("");
-
-  // async function greet() {
-  //   // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-  //   setGreetMsg(await invoke("greet", { name }));
-  // }
+  const [dialogueStatus, setDialogueStatus] = useState<ParseState>(ParseState.NOT_PARSED);
 
   const onFileOpen = (filePath: string) => {
     setDialogueFilePath(filePath);
   };
 
   return (
-    <main className="container">
-      <FileBar onFileOpen={onFileOpen} />
-      <Player dialoguePath={dialogueFilePath} />
+    <main className="h-full flex flex-col gap-1">
+      <FileBar onFileOpen={onFileOpen} dialogueStatus={dialogueStatus} />
+      <Player dialoguePath={dialogueFilePath} onParseFinished={ (status) => setDialogueStatus(status)} />
     </main>
   );
 }

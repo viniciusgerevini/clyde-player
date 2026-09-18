@@ -1,11 +1,13 @@
-import { useDialogueFileHandler } from "../file/useFileHandler";
+import { useDialogueFileHandler, ParseState } from "../file/useFileHandler";
 import { PlayerActionBar } from "./action-bar";
 import { Interpreter, DialogueOptions, DialogueLine, DialogueEnd } from "@clyde-lang/interpreter";
-import "./Player.css";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { BugIcon, CircleCheckIcon, CircleXIcon, CircleDashedIcon, CircleDotIcon } from 'lucide-react';
+import { UnexpectedTokenError } from "@clyde-lang/parser";
 
 interface PlayerParams {
   dialoguePath: string;
+  onParseFinished: (status: ParseState) => void;
 }
 
 interface DialogueEvent {
@@ -26,7 +28,7 @@ type DialogueEntry =
   | DialogueEvent
   | DialogueAutoSelection;
 
-export function Player({ dialoguePath }: PlayerParams) {
+export function Player({ dialoguePath, onParseFinished }: PlayerParams) {
   const [currentDialoguePath, setCurrentDialoguePath] = useState("");
   const [entries, setEntries] = useState<DialogueEntry[]>([]);
   const [isWaitingForChoice, setIsWaitingForChoice] = useState<boolean>(false);
@@ -41,12 +43,15 @@ export function Player({ dialoguePath }: PlayerParams) {
   }, [parsedDoc]);
 
   const isDialogueAvailable = currentDialoguePath !== "";
+  const parseState = fileHandler.getParseState();
 
   const blocks = useMemo(() => {
     return parsedDoc.blocks.map(b => b.name);
   }, [parsedDoc.blocks]);
 
   // TODO is parsing / background parsing
+  // TODO meta styling
+  // TODO debug panel
 
   useEffect(() => {
     scrollToBottom();
@@ -67,8 +72,10 @@ export function Player({ dialoguePath }: PlayerParams) {
     resetToDefault();
   }, [parsedDoc]);
 
-  // TODO block selection
-  //
+  useEffect(() => {
+    onParseFinished(parseState);
+  }, [parseState])
+
   const scrollToBottom = () => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -180,9 +187,10 @@ export function Player({ dialoguePath }: PlayerParams) {
   };
 
   return (
-    <div className="player-container">
+    <div className="flex flex-col grow overflow-hidden">
       <PlayerActionBar
         isDialogueAvailable={isDialogueAvailable}
+        hasDialogueEnded={hasEnded}
         blocks={blocks}
         onBlockSelected={onBlockSelected}
         onRestart={onRestart}
@@ -190,17 +198,47 @@ export function Player({ dialoguePath }: PlayerParams) {
         onForward={onForward}
         onAutoMode={onAutoMode}
         onClearMemory={onClearMemory}
-        onToggleDebugPanel={onToggleDebugPanel}
       />
-      <div className="dialogue-entries" onClick={onNext}>
+      <div className="grow flex flex-col gap-2 overflow-y-auto scroll-smooth" onClick={onNext}>
         {entries.map((e) => {
           return <DialogueBubble content={e} onOptionSelected={onOptionSelected} />;
         })}
         <div ref={bottomRef}></div>
       </div>
-      <div className="player-status">{fileHandler.getParseState()}</div>
+      <div className="flex gap-1 items-center">
+        <div className="grow">
+          <DialogueParsingStatus status={fileHandler.getParseState()} error={parseError} />
+        </div>
+
+        <div className="tooltip" data-tip="Toggle debug panel">
+          <button className="btn btn-ghost" onClick={onToggleDebugPanel}>
+            <BugIcon size={16}/>
+          </button>
+        </div>
+
+      </div>
     </div>
   );
+}
+
+
+function DialogueParsingStatus({status, error} : { status: ParseState, error: Error | UnexpectedTokenError | undefined }) {
+  if (status === ParseState.NOT_PARSED) {
+    return <div className="flex items-center text-neutral" title="Not Parsed"><CircleDashedIcon size={16} /></div>;
+  }
+
+  if (status === ParseState.PARSED) {
+    return <div className="flex items-center text-success" title="Parsing successful"><CircleCheckIcon size={16} /> </div>;
+  }
+
+  if (status === ParseState.PARSE_ERROR) {
+    return <div className="flex items-center gap-2 text-error truncate" title={`parsing error: ${error?.message || ''}`}>
+      <CircleXIcon size={16}/>
+      { error ? error.message : "Parse error" }
+    </div>;
+  }
+
+  return <div className="flex items-center text-warning" title="Parsing..."><CircleDotIcon size={16} /></div>;
 }
 
 function DialogueBubble({
@@ -215,11 +253,13 @@ function DialogueBubble({
   const [selectedOption, setOptionSelected] = useState(selection);
 
   if (content.type === "end") {
-    return <div className="dialogue-entry end">Dialogue Ended</div>;
+    return <div className="bg-warning/50 text-warning-content font-bold rounded-box p-5 flex items-center justify-center">
+      Dialogue Ended
+    </div>;
   }
 
   if (content.type === "event") {
-    return <div className="dialogue-entry event">{content.text}</div>;
+    return <div className="bg-info/50 text-info-content font-bold rounded-box p-5 flex items-center justify-center">{content.text}</div>;
   }
 
   if (content.type === "selection") {
@@ -233,16 +273,16 @@ function DialogueBubble({
   }
 
   return (
-    <div className="dialogue-entry">
-      {content.speaker && <div className="speaker">{content.speaker}</div>}
-      <div className="dialogue-text">{content.text}</div>
+    <div className="bg-base-300 rounded-box p-5 flex flex-col gap-2">
+      {content.speaker && <div className="font-bold">{content.speaker}</div>}
+      <div>{content.text}</div>
       {content.type === "options" && (
         <ul>
           {content.options.map((o, i) => {
             return (
               <li key={i}>
                 <button
-                  className={selectedOption === i ? "selected" : ""}
+                  className={selectedOption === i ? "btn btn-ghost text-base-content font-bold" : "btn btn-ghost"}
                   onClick={(event) => {
                     event.stopPropagation();
                     setOptionSelected(i);
@@ -258,7 +298,7 @@ function DialogueBubble({
         </ul>
       )}
       {(content.id || content.tags) && (
-        <div className="metadata">
+        <div className="text-base-content/70 text-right">
           {content.id && `id: ${content.id} `}
           {content.tags && content.tags.map((t) => `#${t} `)}
         </div>
