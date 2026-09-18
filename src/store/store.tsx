@@ -9,12 +9,15 @@ export function useStore(): LazyStore {
 
 const RECENT_FILES_KEY = "recent_files";
 
-export function useRecentOpenedFiles(): { recentFiles: string[], addRecentFile(filePath: string): void; } {
+export function useRecentOpenedFiles(): {
+  recentFiles: string[];
+  addRecentFile(filePath: string): void;
+} {
   const store = useStore();
   const [recentOpenedFiles, setRecentOpenedFiles] = useState<string[]>([]);
 
   const refreshFiles = async () => {
-    const result =  await store.get<string[]>(RECENT_FILES_KEY);
+    const result = await store.get<string[]>(RECENT_FILES_KEY);
     setRecentOpenedFiles(result || []);
   };
 
@@ -28,7 +31,7 @@ export function useRecentOpenedFiles(): { recentFiles: string[], addRecentFile(f
     if (index > -1) {
       recentOpenedFiles.splice(index, 1);
     } else if (recentOpenedFiles.length > 9) {
-        recentOpenedFiles.pop();
+      recentOpenedFiles.pop();
     }
 
     const newArray = [filePath, ...recentOpenedFiles];

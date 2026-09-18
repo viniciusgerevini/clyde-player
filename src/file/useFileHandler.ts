@@ -80,6 +80,6 @@ export function useDialogueFileHandler(filePath: string): DialogueFileHandler {
     },
     getParseState() {
       return parseState;
-    }
+    },
   };
 }

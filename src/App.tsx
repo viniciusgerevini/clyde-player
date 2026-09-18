@@ -22,7 +22,10 @@ function App() {
   return (
     <main className="h-full flex flex-col gap-1">
       <FileBar onFileOpen={onFileOpen} dialogueStatus={dialogueStatus} />
-      <Player dialoguePath={dialogueFilePath} onParseFinished={ (status) => setDialogueStatus(status)} />
+      <Player
+        dialoguePath={dialogueFilePath}
+        onParseFinished={(status) => setDialogueStatus(status)}
+      />
     </main>
   );
 }

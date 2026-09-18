@@ -2,7 +2,13 @@ import { useDialogueFileHandler, ParseState } from "../file/useFileHandler";
 import { PlayerActionBar } from "./action-bar";
 import { Interpreter, DialogueOptions, DialogueLine, DialogueEnd } from "@clyde-lang/interpreter";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { BugIcon, CircleCheckIcon, CircleXIcon, CircleDashedIcon, CircleDotIcon } from 'lucide-react';
+import {
+  BugIcon,
+  CircleCheckIcon,
+  CircleXIcon,
+  CircleDashedIcon,
+  CircleDotIcon,
+} from "lucide-react";
 import { UnexpectedTokenError } from "@clyde-lang/parser";
 
 interface PlayerParams {
@@ -46,7 +52,7 @@ export function Player({ dialoguePath, onParseFinished }: PlayerParams) {
   const parseState = fileHandler.getParseState();
 
   const blocks = useMemo(() => {
-    return parsedDoc.blocks.map(b => b.name);
+    return parsedDoc.blocks.map((b) => b.name);
   }, [parsedDoc.blocks]);
 
   // TODO is parsing / background parsing
@@ -74,7 +80,7 @@ export function Player({ dialoguePath, onParseFinished }: PlayerParams) {
 
   useEffect(() => {
     onParseFinished(parseState);
-  }, [parseState])
+  }, [parseState]);
 
   const scrollToBottom = () => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -173,8 +179,11 @@ export function Player({ dialoguePath, onParseFinished }: PlayerParams) {
   const onBlockSelected = (blockName: string) => {
     interpreter.start(blockName);
     resetToDefault();
-    addToEntries({ type: "event", text: `Block selected: ${blockName === "" ? "Default" : blockName }` });
-  }
+    addToEntries({
+      type: "event",
+      text: `Block selected: ${blockName === "" ? "Default" : blockName}`,
+    });
+  };
 
   const onOptionSelected = (optionIndex: number) => {
     if (!isWaitingForChoice) {
@@ -212,33 +221,54 @@ export function Player({ dialoguePath, onParseFinished }: PlayerParams) {
 
         <div className="tooltip" data-tip="Toggle debug panel">
           <button className="btn btn-ghost" onClick={onToggleDebugPanel}>
-            <BugIcon size={16}/>
+            <BugIcon size={16} />
           </button>
         </div>
-
       </div>
     </div>
   );
 }
 
-
-function DialogueParsingStatus({status, error} : { status: ParseState, error: Error | UnexpectedTokenError | undefined }) {
+function DialogueParsingStatus({
+  status,
+  error,
+}: {
+  status: ParseState;
+  error: Error | UnexpectedTokenError | undefined;
+}) {
   if (status === ParseState.NOT_PARSED) {
-    return <div className="flex items-center text-neutral" title="Not Parsed"><CircleDashedIcon size={16} /></div>;
+    return (
+      <div className="flex items-center text-neutral" title="Not Parsed">
+        <CircleDashedIcon size={16} />
+      </div>
+    );
   }
 
   if (status === ParseState.PARSED) {
-    return <div className="flex items-center text-success" title="Parsing successful"><CircleCheckIcon size={16} /> </div>;
+    return (
+      <div className="flex items-center text-success" title="Parsing successful">
+        <CircleCheckIcon size={16} />{" "}
+      </div>
+    );
   }
 
   if (status === ParseState.PARSE_ERROR) {
-    return <div className="flex items-center gap-2 text-error truncate" title={`parsing error: ${error?.message || ''}`}>
-      <CircleXIcon size={16}/>
-      { error ? error.message : "Parse error" }
-    </div>;
+    return (
+      <div
+        className="flex items-center gap-2 text-error truncate"
+        title={`parsing error: ${error?.message || ""}`}
+      >
+        <CircleXIcon size={16} />
+        {error ? error.message : "Parse error"}
+      </div>
+    );
   }
 
-  return <div className="flex items-center text-warning" title="Parsing..."><CircleDotIcon size={16} /></div>;
+  return (
+    <div className="flex items-center text-warning" title="Parsing...">
+      <CircleDotIcon size={16} />
+    </div>
+  );
 }
 
 function DialogueBubble({
@@ -253,13 +283,19 @@ function DialogueBubble({
   const [selectedOption, setOptionSelected] = useState(selection);
 
   if (content.type === "end") {
-    return <div className="bg-warning/50 text-warning-content font-bold rounded-box p-5 flex items-center justify-center">
-      Dialogue Ended
-    </div>;
+    return (
+      <div className="bg-warning/50 text-warning-content font-bold rounded-box p-5 flex items-center justify-center">
+        Dialogue Ended
+      </div>
+    );
   }
 
   if (content.type === "event") {
-    return <div className="bg-info/50 text-info-content font-bold rounded-box p-5 flex items-center justify-center">{content.text}</div>;
+    return (
+      <div className="bg-info/50 text-info-content font-bold rounded-box p-5 flex items-center justify-center">
+        {content.text}
+      </div>
+    );
   }
 
   if (content.type === "selection") {
@@ -282,7 +318,11 @@ function DialogueBubble({
             return (
               <li key={i}>
                 <button
-                  className={selectedOption === i ? "btn btn-ghost text-base-content font-bold" : "btn btn-ghost"}
+                  className={
+                    selectedOption === i
+                      ? "btn btn-ghost text-base-content font-bold"
+                      : "btn btn-ghost"
+                  }
                   onClick={(event) => {
                     event.stopPropagation();
                     setOptionSelected(i);

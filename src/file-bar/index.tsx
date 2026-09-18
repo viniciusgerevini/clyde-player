@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 import { open } from "@tauri-apps/plugin-dialog";
-import { basename } from '@tauri-apps/api/path';
-import { FolderOpenIcon, CircleCheckIcon, CircleXIcon, CircleDashedIcon, CircleDotIcon } from 'lucide-react';
+import { basename } from "@tauri-apps/api/path";
+import {
+  FolderOpenIcon,
+  CircleCheckIcon,
+  CircleXIcon,
+  CircleDashedIcon,
+  CircleDotIcon,
+} from "lucide-react";
 import { ParseState } from "../file/useFileHandler";
 import { useRecentOpenedFiles } from "../store/store";
 
@@ -51,32 +57,38 @@ export function FileBar({ onFileOpen, dialogueStatus }: FileBarParams) {
         title={openFilePath}
       >
         <DialogueStatusBadge status={dialogueStatus} />
-        { openFilePath ? <FileName filePath={openFilePath} /> : "No dialogue file open" }
+        {openFilePath ? <FileName filePath={openFilePath} /> : "No dialogue file open"}
       </div>
       <div className="dropdown dropdown-end">
         <div tabIndex={0} role="button" className="btn">
           <FolderOpenIcon size={16} />
         </div>
-        <ul tabIndex={-1} className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+        <ul
+          tabIndex={-1}
+          className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm"
+        >
           <li className="border-b-1 border-base-300">
             <button className="file-menu" onClick={openFile}>
               Open...
             </button>
           </li>
-          { recentFiles.map((r, i) => 
-          <li className="truncate" key={i} title={r}>
-             <button className="file-menu" onClick={() => openRecentFile(r)}><FileName filePath={r} /></button>
-          </li>)}
+          {recentFiles.map((r, i) => (
+            <li className="truncate" key={i} title={r}>
+              <button className="file-menu" onClick={() => openRecentFile(r)}>
+                <FileName filePath={r} />
+              </button>
+            </li>
+          ))}
         </ul>
       </div>
     </div>
   );
 }
 
-function FileName({ filePath }: {filePath: string}) {
+function FileName({ filePath }: { filePath: string }) {
   const [name, setName] = useState("");
 
-  const reloadName = async() => {
+  const reloadName = async () => {
     const n = await basename(filePath);
     setName(n);
   };
@@ -88,7 +100,7 @@ function FileName({ filePath }: {filePath: string}) {
   return <>{name}</>;
 }
 
-function DialogueStatusBadge({status} : { status: ParseState }) {
+function DialogueStatusBadge({ status }: { status: ParseState }) {
   if (status === ParseState.NOT_PARSED) {
     return <CircleDashedIcon size={16} className="text-neutral" />;
   }
@@ -98,10 +110,8 @@ function DialogueStatusBadge({status} : { status: ParseState }) {
   }
 
   if (status === ParseState.PARSE_ERROR) {
-
-    return <CircleXIcon size={16} className="text-error"/>
+    return <CircleXIcon size={16} className="text-error" />;
   }
 
   return <CircleDotIcon size={16} className="text-warning" />;
 }
-
