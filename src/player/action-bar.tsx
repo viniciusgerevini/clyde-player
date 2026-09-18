@@ -9,12 +9,6 @@ import {
   GhostIcon,
   EllipsisVerticalIcon,
 } from "lucide-react";
-// TODO remove hero icons dependency
-// import { ArrowPathRoundedSquareIcon } from '@heroicons/react/24/outline'
-// import { ForwardIcon } from '@heroicons/react/24/outline'
-// import { PlayIcon } from '@heroicons/react/24/outline'
-// import { EllipsisVerticalIcon } from '@heroicons/react/24/outline'
-// import { BackspaceIcon } from '@heroicons/react/24/outline'
 
 interface PlayerActionBarParams {
   isDialogueAvailable: boolean;
