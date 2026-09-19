@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { readTextFile, watch } from "@tauri-apps/plugin-fs";
+import { useEffect, useRef, useState } from "react";
+import { readTextFile, UnwatchFn, watch } from "@tauri-apps/plugin-fs";
 import { parse, ClydeDocumentRoot, UnexpectedTokenError } from "@clyde-lang/parser";
 import { useDebouncedCallback } from "use-debounce";
 
@@ -18,11 +18,16 @@ export enum ParseState {
   PARSE_ERROR,
 }
 
-export function useDialogueFileHandler(filePath: string): DialogueFileHandler {
+export function useDialogueFileHandler(
+  filePath: string,
+  watchChanges: boolean = true,
+): DialogueFileHandler {
   const [fileContent, setFileContent] = useState("");
   const [parsedDocument, setParsedDocument] = useState<ClydeDocumentRoot>(new ClydeDocumentRoot());
   const [lastError, setParseError] = useState<UnexpectedTokenError | Error | undefined>();
   const [parseState, setParseState] = useState<ParseState>(ParseState.NOT_PARSED);
+  const shouldWatchChanges = useRef(watchChanges);
+  shouldWatchChanges.current = watchChanges;
 
   const loadFileDebounced = useDebouncedCallback(async (filePath: string) => {
     try {
@@ -52,17 +57,29 @@ export function useDialogueFileHandler(filePath: string): DialogueFileHandler {
 
     loadFileDebounced(filePath);
 
-    watch(
-      filePath,
-      (_event) => {
-        loadFileDebounced(filePath);
-      },
-      {
-        delayMs: 200,
-      },
-    ).catch((e) => {
-      console.error("Error while watching file", e);
-    });
+    let unregister: UnwatchFn | void;
+
+    (async () => {
+      unregister = await watch(
+        filePath,
+        (_event) => {
+          if (shouldWatchChanges.current) {
+            loadFileDebounced(filePath);
+          }
+        },
+        {
+          delayMs: 200,
+        },
+      ).catch((e) => {
+        console.error("Error while watching file", e);
+      });
+    })();
+
+    return () => {
+      if (unregister) {
+        unregister();
+      }
+    };
   }, [filePath]);
 
   return {

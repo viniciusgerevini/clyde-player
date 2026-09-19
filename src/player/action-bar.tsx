@@ -9,6 +9,8 @@ import {
   GhostIcon,
   EllipsisVerticalIcon,
 } from "lucide-react";
+import { ThemeSelector } from "../file-bar/ThemeSelector";
+import { AppSettings, useSettings } from "../store/useSettings";
 
 interface PlayerActionBarParams {
   isDialogueAvailable: boolean;
@@ -116,10 +118,59 @@ export function PlayerActionBar({
           <DatabaseBackupIcon size={16} />
         </button>
       </div>
+      <SettingsDropdown />
+    </div>
+  );
+}
 
-      <button className="btn">
+function SettingsDropdown() {
+  const [watchFile, setWatchFile] = useSettings(AppSettings.WATCH_FILE);
+  const [isMultiBubble, setMultiBubble] = useSettings(AppSettings.MULTI_BUBBLE);
+  const [showMetadata, setShowMetadata] = useSettings(AppSettings.SHOW_METADATA);
+
+  return (
+    <div className="dropdown dropdown-end">
+      <div tabIndex={0} role="button" className="btn">
         <EllipsisVerticalIcon />
-      </button>
+      </div>
+      <ul tabIndex={-1} className="dropdown-content menu bg-base-100 rounded-box z-1 p-2 shadow-sm">
+        <li className="border-b-1 border-base-300">
+          <label className="label text-base-content gap-2">
+            <input
+              type="checkbox"
+              className="toggle toggle-sm"
+              checked={watchFile}
+              onChange={(e) => setWatchFile(e.target.checked)}
+            />
+            Watch for file changes
+          </label>
+        </li>
+        <li>
+          <label className="label text-base-content gap-2">
+            <input
+              type="checkbox"
+              className="toggle toggle-sm"
+              checked={isMultiBubble}
+              onChange={(e) => setMultiBubble(e.target.checked)}
+            />
+            Toggle multi-bubble mode
+          </label>
+        </li>
+        <li className="border-b-1 border-base-300">
+          <label className="label text-base-content gap-2">
+            <input
+              type="checkbox"
+              className="toggle toggle-sm"
+              checked={showMetadata}
+              onChange={(e) => setShowMetadata(e.target.checked)}
+            />
+            Show metadata
+          </label>
+        </li>
+        <li>
+          <button className="">Interface settings...</button>
+        </li>
+      </ul>
     </div>
   );
 }

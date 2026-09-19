@@ -10,6 +10,7 @@ import {
   CircleDotIcon,
 } from "lucide-react";
 import { UnexpectedTokenError } from "@clyde-lang/parser";
+import { AppSettings, useSettings } from "../store/useSettings";
 
 interface PlayerParams {
   dialoguePath: string;
@@ -38,8 +39,11 @@ export function Player({ dialoguePath, onParseFinished }: PlayerParams) {
   const [currentDialoguePath, setCurrentDialoguePath] = useState("");
   const [entries, setEntries] = useState<DialogueEntry[]>([]);
   const [isWaitingForChoice, setIsWaitingForChoice] = useState<boolean>(false);
+  const [isMultiBubble] = useSettings(AppSettings.MULTI_BUBBLE);
+  const [showMetadata] = useSettings(AppSettings.SHOW_METADATA);
+  const [watchChanges] = useSettings(AppSettings.WATCH_FILE);
   const [hasEnded, setHasEnded] = useState<boolean>(false);
-  const fileHandler = useDialogueFileHandler(dialoguePath);
+  const fileHandler = useDialogueFileHandler(dialoguePath, watchChanges);
   const bottomRef = useRef<null | HTMLDivElement>(null);
 
   const parsedDoc = fileHandler.getParsedDocument();
@@ -56,7 +60,6 @@ export function Player({ dialoguePath, onParseFinished }: PlayerParams) {
   }, [parsedDoc.blocks]);
 
   // TODO is parsing / background parsing
-  // TODO meta styling
   // TODO debug panel
 
   useEffect(() => {
@@ -209,9 +212,24 @@ export function Player({ dialoguePath, onParseFinished }: PlayerParams) {
         onClearMemory={onClearMemory}
       />
       <div className="grow flex flex-col gap-2 overflow-y-auto scroll-smooth" onClick={onNext}>
-        {entries.map((e) => {
-          return <DialogueBubble content={e} onOptionSelected={onOptionSelected} />;
-        })}
+        {isMultiBubble &&
+          entries.map((e, i) => {
+            return (
+              <DialogueBubble
+                key={i}
+                content={e}
+                onOptionSelected={onOptionSelected}
+                showMetadata={showMetadata}
+              />
+            );
+          })}
+        {!isMultiBubble && entries.length ? (
+          <DialogueBubble
+            content={entries[entries.length - 1]}
+            onOptionSelected={onOptionSelected}
+            showMetadata={showMetadata}
+          />
+        ) : null}
         <div ref={bottomRef}></div>
       </div>
       <div className="flex gap-1 items-center">
@@ -275,10 +293,12 @@ function DialogueBubble({
   content,
   onOptionSelected,
   selection = -1,
+  showMetadata,
 }: {
   content: DialogueEntry;
   onOptionSelected: (optionIndex: number) => void;
   selection?: number;
+  showMetadata: boolean;
 }) {
   const [selectedOption, setOptionSelected] = useState(selection);
 
@@ -304,6 +324,7 @@ function DialogueBubble({
         content={content.content}
         onOptionSelected={onOptionSelected}
         selection={content.selection}
+        showMetadata={showMetadata}
       />
     );
   }
@@ -337,7 +358,7 @@ function DialogueBubble({
           })}
         </ul>
       )}
-      {(content.id || content.tags) && (
+      {showMetadata && (content.id || content.tags) && (
         <div className="text-base-content/70 text-right">
           {content.id && `id: ${content.id} `}
           {content.tags && content.tags.map((t) => `#${t} `)}
