@@ -13,6 +13,7 @@
     "windows": [
       {
         "title": "Clyde Dialogue Player",
+        "zoomHotkeysEnabled": true,
         "width": 800,
         "height": 600
       }

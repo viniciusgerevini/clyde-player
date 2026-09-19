@@ -17,6 +17,7 @@
     },
     "fs:default",
     "fs:allow-watch",
-    "store:default"
+    "store:default",
+    "core:webview:allow-set-webview-zoom"
   ]
 }
