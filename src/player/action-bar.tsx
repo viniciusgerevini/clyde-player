@@ -9,8 +9,8 @@ import {
   GhostIcon,
   EllipsisVerticalIcon,
 } from "lucide-react";
-import { ThemeSelector } from "../file-bar/ThemeSelector";
 import { AppSettings, useSettings } from "../store/useSettings";
+import { ThemeSelector } from "../file-bar/ThemeSelector";
 
 interface PlayerActionBarParams {
   isDialogueAvailable: boolean;
@@ -42,8 +42,6 @@ export function PlayerActionBar({
     setSelectedBlock(blockName);
     onBlockSelected(blockName);
   };
-
-  // TODO overflow menu itesm
 
   return (
     <div className="flex gap-1 mb-1">
@@ -168,7 +166,7 @@ function SettingsDropdown() {
           </label>
         </li>
         <li>
-          <button className="">Interface settings...</button>
+          <ThemeSelector />
         </li>
       </ul>
     </div>

@@ -5,18 +5,21 @@ export enum AppSettings {
   WATCH_FILE = "watch_files",
   MULTI_BUBBLE = "multi_bubble",
   SHOW_METADATA = "show_metadata",
+  THEME = "theme",
 }
 
 type SettingsType = {
   [AppSettings.WATCH_FILE]: boolean;
   [AppSettings.MULTI_BUBBLE]: boolean;
   [AppSettings.SHOW_METADATA]: boolean;
+  [AppSettings.THEME]: string;
 };
 
 const settingDefaultValue: Record<AppSettings, any> = {
   [AppSettings.WATCH_FILE]: true,
   [AppSettings.MULTI_BUBBLE]: true,
   [AppSettings.SHOW_METADATA]: false,
+  [AppSettings.THEME]: "light",
 };
 
 export function useSettings<T extends AppSettings>(

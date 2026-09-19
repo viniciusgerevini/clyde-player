@@ -18,6 +18,8 @@
     "fs:default",
     "fs:allow-watch",
     "store:default",
-    "core:webview:allow-set-webview-zoom"
+    "core:webview:allow-set-webview-zoom",
+    "core:window:allow-show",
+    "core:window:allow-set-focus"
   ]
 }

@@ -3,8 +3,16 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import { AppContext } from "./AppContext";
+import { AppSettings } from "./store/useSettings";
 
 const store = new LazyStore("store.json", { autoSave: true });
+
+store.get(AppSettings.THEME).then((value) => {
+  console.log(value);
+  if (value) {
+    document.querySelector("html")?.setAttribute("data-theme", value);
+  }
+});
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
