@@ -6,6 +6,8 @@ export enum AppSettings {
   MULTI_BUBBLE = "multi_bubble",
   SHOW_METADATA = "show_metadata",
   THEME = "theme",
+  PLAYER_DEBUGGER_LAYOUT = "player_debugger_layout",
+  DEBUGGER_VISIBLE = "debugger_panel_visible",
 }
 
 type SettingsType = {
@@ -13,6 +15,8 @@ type SettingsType = {
   [AppSettings.MULTI_BUBBLE]: boolean;
   [AppSettings.SHOW_METADATA]: boolean;
   [AppSettings.THEME]: string;
+  [AppSettings.PLAYER_DEBUGGER_LAYOUT]: string;
+  [AppSettings.DEBUGGER_VISIBLE]: boolean;
 };
 
 const settingDefaultValue: Record<AppSettings, any> = {
@@ -20,6 +24,8 @@ const settingDefaultValue: Record<AppSettings, any> = {
   [AppSettings.MULTI_BUBBLE]: true,
   [AppSettings.SHOW_METADATA]: false,
   [AppSettings.THEME]: "light",
+  [AppSettings.PLAYER_DEBUGGER_LAYOUT]: "",
+  [AppSettings.DEBUGGER_VISIBLE]: false,
 };
 
 export function useSettings<T extends AppSettings>(

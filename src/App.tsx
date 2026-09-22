@@ -27,7 +27,7 @@ function App() {
     setTimeout(() => {
       getCurrentWindow().show();
       getCurrentWindow().setFocus();
-    }, 200)
+    }, 200);
   }, [selectedTheme]);
 
   const onFileOpen = (filePath: string) => {

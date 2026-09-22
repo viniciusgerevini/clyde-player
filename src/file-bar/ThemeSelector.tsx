@@ -44,24 +44,28 @@ export function ThemeSelector() {
     setSelectedTheme(theme);
   };
 
-  return (<>
-    Theme
-    <div className="flex">
-      <div className="bg-base-100 grid shrink-0 grid-cols-2 gap-0.5 rounded-md p-1 shadow-sm">
-        <div className="bg-base-content size-1 rounded-full">
+  return (
+    <>
+      Theme
+      <div className="flex">
+        <div className="bg-base-100 grid shrink-0 grid-cols-2 gap-0.5 rounded-md p-1 shadow-sm">
+          <div className="bg-base-content size-1 rounded-full"></div>
+          <div className="bg-primary size-1 rounded-full"></div>
+          <div className="bg-secondary size-1 rounded-full"></div>
+          <div className="bg-accent size-1 rounded-full"></div>
         </div>
-        <div className="bg-primary size-1 rounded-full">
-        </div>
-        <div className="bg-secondary size-1 rounded-full">
-        </div>
-        <div className="bg-accent size-1 rounded-full">
-        </div>
+        <select
+          className="select theme-controller"
+          value={selectedTheme}
+          onChange={(e) => changeTheme(e.target.value)}
+        >
+          {themes.map((t, i) => (
+            <option key={i} value={t}>
+              {t}
+            </option>
+          ))}
+        </select>
       </div>
-    <select className="select theme-controller" value={selectedTheme} onChange={(e) => changeTheme(e.target.value)}> 
-      {themes.map((t, i) => (
-        <option key={i} value={t}>{t}</option>
-      ))}
-    </select>
-    </div>
-  </>)
+    </>
+  );
 }

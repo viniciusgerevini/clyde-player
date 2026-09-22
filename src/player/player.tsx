@@ -1,3 +1,4 @@
+import { Group, Layout, LayoutChangedMeta, Panel, Separator } from "react-resizable-panels";
 import { useDialogueFileHandler, ParseState } from "../file/useFileHandler";
 import { PlayerActionBar } from "./ActionBar";
 import { Interpreter, DialogueOptions, DialogueLine, DialogueEnd } from "@clyde-lang/interpreter";
@@ -8,9 +9,11 @@ import {
   CircleXIcon,
   CircleDashedIcon,
   CircleDotIcon,
+  GripHorizontalIcon,
 } from "lucide-react";
 import { UnexpectedTokenError } from "@clyde-lang/parser";
 import { AppSettings, useSettings } from "../store/useSettings";
+import { DebugPanel } from "../debugger/DebugPanel";
 
 interface PlayerParams {
   dialoguePath: string;
@@ -42,9 +45,24 @@ export function Player({ dialoguePath, onParseFinished }: PlayerParams) {
   const [isMultiBubble] = useSettings(AppSettings.MULTI_BUBBLE);
   const [showMetadata] = useSettings(AppSettings.SHOW_METADATA);
   const [watchChanges] = useSettings(AppSettings.WATCH_FILE);
+  const [isDebugPanelVisible, setDebugPannelVisible] = useSettings(AppSettings.DEBUGGER_VISIBLE);
+  const [playerDebuggerLayout, setPlayerDebuggerLayout] = useSettings(
+    AppSettings.PLAYER_DEBUGGER_LAYOUT,
+  );
   const [hasEnded, setHasEnded] = useState<boolean>(false);
   const fileHandler = useDialogueFileHandler(dialoguePath, watchChanges);
   const bottomRef = useRef<null | HTMLDivElement>(null);
+
+  const defaultLayout = useMemo(() => {
+    try {
+      if (playerDebuggerLayout) {
+        return JSON.parse(playerDebuggerLayout);
+      }
+    } catch {
+      return;
+    }
+    return;
+  }, [playerDebuggerLayout]);
 
   const parsedDoc = fileHandler.getParsedDocument();
   const parseError = fileHandler.getParseError();
@@ -58,8 +76,6 @@ export function Player({ dialoguePath, onParseFinished }: PlayerParams) {
   const blocks = useMemo(() => {
     return parsedDoc.blocks.map((b) => b.name);
   }, [parsedDoc.blocks]);
-
-  // TODO debug panel
 
   useEffect(() => {
     scrollToBottom();
@@ -176,7 +192,9 @@ export function Player({ dialoguePath, onParseFinished }: PlayerParams) {
     setEntries([]);
   };
 
-  const onToggleDebugPanel = () => {};
+  const onToggleDebugPanel = () => {
+    setDebugPannelVisible(!isDebugPanelVisible);
+  };
 
   const onBlockSelected = (blockName: string) => {
     interpreter.start(blockName);
@@ -197,51 +215,71 @@ export function Player({ dialoguePath, onParseFinished }: PlayerParams) {
     next();
   };
 
+  const onLayoutChanged = (layout: Layout, meta: LayoutChangedMeta) => {
+    if (meta.isUserInteraction) {
+      setPlayerDebuggerLayout(JSON.stringify(layout));
+    }
+  };
+
   return (
     <div className="flex flex-col grow overflow-hidden">
-      <PlayerActionBar
-        isDialogueAvailable={isDialogueAvailable}
-        hasDialogueEnded={hasEnded}
-        blocks={blocks}
-        onBlockSelected={onBlockSelected}
-        onRestart={onRestart}
-        onNext={onNext}
-        onForward={onForward}
-        onAutoMode={onAutoMode}
-        onClearMemory={onClearMemory}
-      />
-      <div className="grow flex flex-col gap-2 overflow-y-auto scroll-smooth" onClick={onNext}>
-        {isMultiBubble &&
-          entries.map((e, i) => {
-            return (
+      <Group orientation="vertical" defaultLayout={defaultLayout} onLayoutChanged={onLayoutChanged}>
+        <Panel id="pp" minSize={30} className="flex flex-col grow overflow-hidden">
+          <PlayerActionBar
+            isDialogueAvailable={isDialogueAvailable}
+            hasDialogueEnded={hasEnded}
+            blocks={blocks}
+            onBlockSelected={onBlockSelected}
+            onRestart={onRestart}
+            onNext={onNext}
+            onForward={onForward}
+            onAutoMode={onAutoMode}
+            onClearMemory={onClearMemory}
+          />
+          <div className="grow flex flex-col gap-2 overflow-y-auto scroll-smooth" onClick={onNext}>
+            {isMultiBubble &&
+              entries.map((e, i) => {
+                return (
+                  <DialogueBubble
+                    key={i}
+                    content={e}
+                    onOptionSelected={onOptionSelected}
+                    showMetadata={showMetadata}
+                  />
+                );
+              })}
+            {!isMultiBubble && entries.length ? (
               <DialogueBubble
-                key={i}
-                content={e}
+                content={entries[entries.length - 1]}
                 onOptionSelected={onOptionSelected}
                 showMetadata={showMetadata}
               />
-            );
-          })}
-        {!isMultiBubble && entries.length ? (
-          <DialogueBubble
-            content={entries[entries.length - 1]}
-            onOptionSelected={onOptionSelected}
-            showMetadata={showMetadata}
-          />
-        ) : null}
-        <div ref={bottomRef}></div>
-      </div>
-      <div className="flex gap-1 items-center">
-        <div className="grow">
-          <DialogueParsingStatus status={fileHandler.getParseState()} error={parseError} />
-        </div>
+            ) : null}
+            <div ref={bottomRef}></div>
+          </div>
+          <div className="flex gap-1 items-center">
+            <div className="grow">
+              <DialogueParsingStatus status={fileHandler.getParseState()} error={parseError} />
+            </div>
 
-        <div className="tooltip" data-tip="Toggle debug panel">
-          <button className="btn btn-ghost" onClick={onToggleDebugPanel}>
-            <BugIcon size={16} />
-          </button>
-        </div>
-      </div>
+            <div className="tooltip" data-tip="Toggle debug panel">
+              <button className="btn btn-ghost" onClick={onToggleDebugPanel}>
+                <BugIcon size={16} />
+              </button>
+            </div>
+          </div>
+        </Panel>
+        {isDebugPanelVisible && (
+          <>
+            <Separator className="divider p-1 m-1">
+              <GripHorizontalIcon />
+            </Separator>
+            <Panel id="dp" defaultSize={200}>
+              <DebugPanel />
+            </Panel>
+          </>
+        )}
+      </Group>
     </div>
   );
 }
