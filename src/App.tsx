@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 // import { invoke } from "@tauri-apps/api/core";
 import "./App.css";
 import { FileBar } from "./file-bar";
-import { Player } from "./player/player";
+import { Player } from "./player/Player";
 import { ParseState } from "./file/useFileHandler";
 import { AppSettings, useSettings } from "./store/useSettings";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 
+// TODO commands
 // c-n - next line
 // c-j c-k options
 // <c-y> accept

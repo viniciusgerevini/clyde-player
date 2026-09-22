@@ -40,7 +40,6 @@ export function useDialogueFileHandler(
       setParsedDocument(doc);
 
       setParseError(undefined);
-
       setParseState(ParseState.PARSED);
     } catch (e) {
       setParseError(e as any);

@@ -1,5 +1,5 @@
 import { useDialogueFileHandler, ParseState } from "../file/useFileHandler";
-import { PlayerActionBar } from "./action-bar";
+import { PlayerActionBar } from "./ActionBar";
 import { Interpreter, DialogueOptions, DialogueLine, DialogueEnd } from "@clyde-lang/interpreter";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -52,14 +52,13 @@ export function Player({ dialoguePath, onParseFinished }: PlayerParams) {
     return Interpreter(parsedDoc);
   }, [parsedDoc]);
 
-  const isDialogueAvailable = currentDialoguePath !== "";
+  const isDialogueAvailable = currentDialoguePath !== "" && !parseError;
   const parseState = fileHandler.getParseState();
 
   const blocks = useMemo(() => {
     return parsedDoc.blocks.map((b) => b.name);
   }, [parsedDoc.blocks]);
 
-  // TODO is parsing / background parsing
   // TODO debug panel
 
   useEffect(() => {

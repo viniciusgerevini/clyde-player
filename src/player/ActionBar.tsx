@@ -165,7 +165,7 @@ function SettingsDropdown() {
             Show metadata
           </label>
         </li>
-        <li>
+        <li className="pt-2">
           <ThemeSelector />
         </li>
       </ul>
