@@ -275,7 +275,7 @@ export function Player({ dialoguePath, onParseFinished }: PlayerParams) {
               <GripHorizontalIcon />
             </Separator>
             <Panel id="dp" defaultSize={200}>
-              <DebugPanel />
+              <DebugPanel interpreter={interpreter} isDialogueAvailable={currentDialoguePath !== ""} />
             </Panel>
           </>
         )}
