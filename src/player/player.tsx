@@ -14,6 +14,7 @@ import {
 import { UnexpectedTokenError } from "@clyde-lang/parser";
 import { AppSettings, useSettings } from "../store/useSettings";
 import { DebugPanel } from "../debugger/DebugPanel";
+import { TimelineEventTitles, useEventTimeline } from "../debugger/useEventTimeline";
 
 interface PlayerParams {
   dialoguePath: string;
@@ -52,6 +53,7 @@ export function Player({ dialoguePath, onParseFinished }: PlayerParams) {
   const [hasEnded, setHasEnded] = useState<boolean>(false);
   const fileHandler = useDialogueFileHandler(dialoguePath, watchChanges);
   const bottomRef = useRef<null | HTMLDivElement>(null);
+  const { events, addEventToTimeline, clearTimelineEvents } = useEventTimeline();
 
   const defaultLayout = useMemo(() => {
     try {
@@ -86,12 +88,14 @@ export function Player({ dialoguePath, onParseFinished }: PlayerParams) {
       setCurrentDialoguePath(dialoguePath);
       setEntries([]);
       resetToDefault();
+      clearTimelineEvents();
     }
   }, [dialoguePath]);
 
   useEffect(() => {
     if (currentDialoguePath !== "" && currentDialoguePath === dialoguePath) {
       addToEntries({ type: "event", text: "Dialogue Loaded" });
+      addEventToTimeline({ timestamp: Date.now(), title: TimelineEventTitles.DIALOGUE_LOADED });
     }
     resetToDefault();
   }, [parsedDoc]);
@@ -118,6 +122,7 @@ export function Player({ dialoguePath, onParseFinished }: PlayerParams) {
     interpreter.start();
     setEntries([]);
     resetToDefault();
+    addEventToTimeline({ timestamp: Date.now(), title: TimelineEventTitles.DIALOGUE_LOADED });
   };
 
   const onNext = () => {
@@ -137,6 +142,7 @@ export function Player({ dialoguePath, onParseFinished }: PlayerParams) {
     if (content.type === "options") {
       setIsWaitingForChoice(true);
     } else if (content.type === "end") {
+      addEventToTimeline({ timestamp: Date.now(), title: TimelineEventTitles.DIALOGUE_ENDED });
       setHasEnded(true);
     }
   };
@@ -183,6 +189,7 @@ export function Player({ dialoguePath, onParseFinished }: PlayerParams) {
     }
     addToEntries(newEntries);
     setHasEnded(true);
+    addEventToTimeline({ timestamp: Date.now(), title: TimelineEventTitles.DIALOGUE_ENDED });
   };
 
   const onClearMemory = () => {
@@ -202,6 +209,12 @@ export function Player({ dialoguePath, onParseFinished }: PlayerParams) {
     addToEntries({
       type: "event",
       text: `Block selected: ${blockName === "" ? "Default" : blockName}`,
+    });
+
+    addEventToTimeline({
+      timestamp: Date.now(),
+      title: TimelineEventTitles.BLOCK_SELECTED,
+      description: blockName,
     });
   };
 
@@ -275,7 +288,12 @@ export function Player({ dialoguePath, onParseFinished }: PlayerParams) {
               <GripHorizontalIcon />
             </Separator>
             <Panel id="dp" defaultSize={200}>
-              <DebugPanel interpreter={interpreter} isDialogueAvailable={currentDialoguePath !== ""} />
+              <DebugPanel
+                interpreter={interpreter}
+                isDialogueAvailable={currentDialoguePath !== ""}
+                events={events}
+                addEventToTimeline={addEventToTimeline}
+              />
             </Panel>
           </>
         )}
