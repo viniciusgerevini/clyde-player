@@ -2,7 +2,7 @@ import { Group, Layout, LayoutChangedMeta, Panel, Separator } from "react-resiza
 import { useDialogueFileHandler, ParseState } from "../file/useFileHandler";
 import { PlayerActionBar } from "./ActionBar";
 import { Interpreter, DialogueOptions, DialogueLine, DialogueEnd } from "@clyde-lang/interpreter";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   BugIcon,
   CircleCheckIcon,
@@ -52,6 +52,7 @@ export function Player({ dialoguePath, onParseFinished }: PlayerParams) {
     AppSettings.PLAYER_DEBUGGER_LAYOUT,
   );
   const [hasEnded, setHasEnded] = useState<boolean>(false);
+  const [clearMemFlag, setClearMemFlag] = useState(0);
   const fileHandler = useDialogueFileHandler(dialoguePath, watchChanges);
   const bottomRef = useRef<null | HTMLDivElement>(null);
   const { events, addEventToTimeline, clearTimelineEvents } = useEventTimeline();
@@ -215,6 +216,8 @@ export function Player({ dialoguePath, onParseFinished }: PlayerParams) {
     interpreter.start();
     resetToDefault();
     setEntries([]);
+    setClearMemFlag(Date.now());
+    addEventToTimeline({ timestamp: Date.now(), title: TimelineEventTitles.CLEAR_MEMORY });
   };
 
   const onToggleDebugPanel = () => {
@@ -311,6 +314,7 @@ export function Player({ dialoguePath, onParseFinished }: PlayerParams) {
                 isDialogueAvailable={currentDialoguePath !== ""}
                 events={events}
                 addEventToTimeline={addEventToTimeline}
+                clearMemoryFlag={clearMemFlag}
               />
             </Panel>
           </>

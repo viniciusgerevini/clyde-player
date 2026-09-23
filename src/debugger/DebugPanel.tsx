@@ -1,29 +1,24 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Group, Panel, Separator } from "react-resizable-panels";
 import {
-  CheckIcon,
   GripVerticalIcon,
-  MessageCircleCheckIcon,
   PencilIcon,
-  PowerIcon,
-  RotateCcwIcon,
   SaveIcon,
-  SparkleIcon,
-  SquareMousePointerIcon,
   SquarePlusIcon,
   TrashIcon,
-  VariableIcon,
   XIcon,
 } from "lucide-react";
 import { InterpreterInstance, EventType } from "@clyde-lang/interpreter";
 import { TimelineEvent, TimelineEventTitles } from "./useEventTimeline";
 import { useExternalVariables } from "../store/useExternalVariables";
+import { EventTimeline } from "./EventTimelineView";
 
 interface DebugPanelParams {
   interpreter: InterpreterInstance;
   isDialogueAvailable: boolean;
   events: TimelineEvent[];
   addEventToTimeline: (event: TimelineEvent) => void;
+  clearMemoryFlag: number;
 }
 
 // TODO fix grid (fields overlapping)
@@ -32,6 +27,7 @@ export function DebugPanel({
   isDialogueAvailable,
   events,
   addEventToTimeline,
+  clearMemoryFlag,
 }: DebugPanelParams) {
   const variablesRef = useRef<VariablesList>({});
   const [variables, setVariables] = useState<VariablesList>({});
@@ -70,7 +66,7 @@ export function DebugPanel({
       interpreter.off(EventType.VARIABLE_CHANGED, onVariableChanged);
       interpreter.off(EventType.EVENT_TRIGGERED, onEventTriggered);
     };
-  }, [interpreter]);
+  }, [interpreter, clearMemoryFlag]);
 
   const onVariableChanged = (params: { name: string; value: any }) => {
     if (typeof params.value === "undefined") {
@@ -117,34 +113,32 @@ export function DebugPanel({
     <div className="min-h-30 h-full overflow-hidden">
       <Group id="dbgs" orientation="horizontal">
         <Panel id="dbl">
-          <div className="flex flex-col overflow-hidden">
-            <div className="tabs tabs-lift p-2 h-full">
-              <input
-                type="radio"
-                name="variables_tabs"
-                className="tab"
-                aria-label="Variables"
-                defaultChecked
-              />
-              <VariableTabContent
-                variables={variables}
-                onChange={onVariableUpdate}
-                onDeleted={onVariableDeleted}
-                isEnabled={isDialogueAvailable}
-              />
-              <input
-                type="radio"
-                name="variables_tabs"
-                className="tab"
-                aria-label="External variables"
-              />
-              <VariableTabContent
-                variables={externalVariables}
-                onChange={onExternalVariableUpdate}
-                onDeleted={onExternalVariableDeleted}
-                isEnabled={true}
-              />
-            </div>
+          <div className="tabs tabs-lift p-2 h-full">
+            <input
+              type="radio"
+              name="variables_tabs"
+              className="tab"
+              aria-label="Variables"
+              defaultChecked
+            />
+            <VariableTabContent
+              variables={variables}
+              onChange={onVariableUpdate}
+              onDeleted={onVariableDeleted}
+              isEnabled={isDialogueAvailable}
+            />
+            <input
+              type="radio"
+              name="variables_tabs"
+              className="tab"
+              aria-label="External variables"
+            />
+            <VariableTabContent
+              variables={externalVariables}
+              onChange={onExternalVariableUpdate}
+              onDeleted={onExternalVariableDeleted}
+              isEnabled={true}
+            />
           </div>
         </Panel>
 
@@ -199,35 +193,46 @@ function VariableTabContent({
   }, [variables]);
 
   return (
-    <div className="tab-content bg-base-100 border-base-300 p-2 overflow-y-auto">
-      <div className="flex justify-end z-10">
-        <button
-          className="btn btn-sm btn-ghost"
-          disabled={isAddingNew || !isEnabled}
-          onClick={() => setIsAddingNew(true)}
-        >
-          <SquarePlusIcon size={16} />
-        </button>
-      </div>
+    <div className="tab-content bg-base-100 border-base-300 p-2 overflow-y-auto pt-5">
       <div className="flex overflow-y-auto">
-        <div className="grid grid-cols-4 w-full">
-          {isAddingNew && (
-            <VariableRow
-              variableName={""}
-              variableValue={""}
-              variableType={"string"}
-              onChange={(c) => {
-                setIsAddingNew(false);
-                onChange(c);
-              }}
-              onDeleted={() => {
-                setIsAddingNew(false);
-              }}
-              isNew={true}
-            />
-          )}
-          {content}
-        </div>
+        <table className="table table-zebra w-full">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Value</th>
+              <th>
+                <div className="flex justify-end">
+                  <button
+                    className="btn btn-sm btn-ghost"
+                    disabled={isAddingNew || !isEnabled}
+                    onClick={() => setIsAddingNew(true)}
+                  >
+                    <SquarePlusIcon size={16} />
+                  </button>
+                </div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {isAddingNew && (
+              <VariableRow
+                variableName={""}
+                variableValue={""}
+                variableType={"string"}
+                onChange={(c) => {
+                  setIsAddingNew(false);
+                  onChange(c);
+                }}
+                onDeleted={() => {
+                  setIsAddingNew(false);
+                }}
+                isNew={true}
+              />
+            )}
+            {content}
+          </tbody>
+        </table>
       </div>
     </div>
   );
@@ -304,8 +309,8 @@ function VariableRow({
   };
 
   return (
-    <>
-      <div className="p-1 flex items-center">
+    <tr>
+      <td>
         {isEditing ? (
           <input
             type="text"
@@ -321,8 +326,8 @@ function VariableRow({
         ) : (
           <>{name}</>
         )}
-      </div>
-      <div className="p-1 flex items-center">
+      </td>
+      <td>
         {isEditing ? (
           <select
             className="select"
@@ -338,8 +343,8 @@ function VariableRow({
         ) : (
           <VariableTypeBadge variableType={varType} />
         )}
-      </div>
-      <div className="p-1 flex items-center">
+      </td>
+      <td>
         {isEditing ? (
           <VariableRowValue
             variableType={varType}
@@ -351,49 +356,51 @@ function VariableRow({
         ) : (
           <code>{varType === "boolean" ? (value ? "True" : "False") : value}</code>
         )}
-      </div>
-      <div className="p-1 flex gap-1 items-center justify-end">
-        {isEditing ? (
-          <>
-            <button
-              className="btn btn-sm"
-              aria-label="Save changes"
-              title="Save changes"
-              onClick={saveChanges}
-            >
-              <SaveIcon size={16} />
-            </button>
-            <button
-              className="btn btn-sm"
-              onClick={() => cancelChanges()}
-              aria-label="Cancel changes"
-              title="Cancel changes"
-            >
-              <XIcon size={16} />
-            </button>
-          </>
-        ) : (
-          <>
-            <button
-              className="btn btn-sm"
-              aria-label="Edit variable"
-              title="Edit variable"
-              onClick={() => setIsEditing(true)}
-            >
-              <PencilIcon size={16} />
-            </button>
-            <button
-              className="btn btn-sm"
-              aria-label="Delete variable"
-              title="Delete variable"
-              onClick={deleteVariable}
-            >
-              <TrashIcon size={16} />
-            </button>
-          </>
-        )}
-      </div>
-    </>
+      </td>
+      <td>
+        <div className="flex justify-end gap-1">
+          {isEditing ? (
+            <>
+              <button
+                className="btn btn-sm"
+                aria-label="Save changes"
+                title="Save changes"
+                onClick={saveChanges}
+              >
+                <SaveIcon size={16} />
+              </button>
+              <button
+                className="btn btn-sm"
+                onClick={() => cancelChanges()}
+                aria-label="Cancel changes"
+                title="Cancel changes"
+              >
+                <XIcon size={16} />
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                className="btn btn-sm"
+                aria-label="Edit variable"
+                title="Edit variable"
+                onClick={() => setIsEditing(true)}
+              >
+                <PencilIcon size={16} />
+              </button>
+              <button
+                className="btn btn-sm"
+                aria-label="Delete variable"
+                title="Delete variable"
+                onClick={deleteVariable}
+              >
+                <TrashIcon size={16} />
+              </button>
+            </>
+          )}
+        </div>
+      </td>
+    </tr>
   );
 }
 
@@ -460,89 +467,5 @@ function VariableRowValue({
       value={variableValue}
       onChange={(e) => onChange(e.target.value)}
     />
-  );
-}
-
-function EventTimeline({ events }: { events: TimelineEvent[] }) {
-  return (
-    <ul className="timeline timeline-vertical">
-      {events.map((e, i) => {
-        return (
-          <li key={`${e.timestamp}${e.title}${e.description}`}>
-            {i > 0 && <hr />}
-            <div className="timeline-start text-xs">
-              <EventDate timestamp={e.timestamp} />
-            </div>
-            <div className="timeline-middle">
-              <EventIcon title={e.title} />
-            </div>
-            <div className="timeline-end timeline-box">
-              <span className="font-semibold">{e.title}</span>
-              {e.description ? ` | ${e.description}` : ""}
-            </div>
-            <hr />
-          </li>
-        );
-      })}
-
-      <li>
-        <hr />
-        <div className="timeline-middle">
-          <EventIcon title="start" />
-        </div>
-      </li>
-    </ul>
-  );
-}
-
-function EventDate({ timestamp }: { timestamp: number }) {
-  const date = new Date(timestamp);
-
-  const dateParts = [
-    date.getFullYear(),
-    (date.getMonth() + 1).toString().padStart(2, "0"),
-    date.getDate().toString().padStart(2, "0"),
-  ];
-
-  const hourParts = [
-    date.getHours().toString().padStart(2, "0"),
-    date.getMinutes().toString().padStart(2, "0"),
-    date.getSeconds().toString().padStart(2, "0"),
-  ];
-
-  return <>{`${dateParts.join("-")} ${hourParts.join(":")}`}</>;
-}
-
-function EventIcon({ title }: { title: string }) {
-  const iconSize = 10;
-  let icon = <CheckIcon size={iconSize} />;
-  if (title === TimelineEventTitles.EVENT_TRIGGERED) {
-    icon = <SparkleIcon size={iconSize} />;
-  }
-
-  if (title === TimelineEventTitles.VARIABLE_CHANGED || title === TimelineEventTitles.EXTERNAL_VARIABLE_CHANGED) {
-    icon = <VariableIcon size={iconSize} />;
-  }
-
-  if (title === TimelineEventTitles.BLOCK_SELECTED) {
-    icon = <SquareMousePointerIcon size={iconSize} />;
-  }
-
-  if (title === TimelineEventTitles.DIALOGUE_ENDED) {
-    icon = <MessageCircleCheckIcon size={iconSize} />;
-  }
-
-  if (title === TimelineEventTitles.DIALOGUE_LOADED) {
-    icon = <RotateCcwIcon size={iconSize} />;
-  }
-
-  if (title === "start") {
-    icon = <PowerIcon size={iconSize} />;
-  }
-
-  return (
-    <div className="p-1 bg-neutral text-neutral-content rounded-full" title={title}>
-      {icon}
-    </div>
   );
 }
