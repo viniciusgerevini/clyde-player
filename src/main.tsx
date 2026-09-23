@@ -6,6 +6,7 @@ import { AppContext } from "./AppContext";
 import { AppSettings } from "./store/useSettings";
 
 const store = new LazyStore("store.json", { autoSave: true });
+const variablesStore = new LazyStore("variables.json", { autoSave: true });
 
 store.get(AppSettings.THEME).then((value) => {
   if (value) {
@@ -15,7 +16,7 @@ store.get(AppSettings.THEME).then((value) => {
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <AppContext value={{ store }}>
+    <AppContext value={{ store, variablesStore }}>
       <App />
     </AppContext>
   </React.StrictMode>,

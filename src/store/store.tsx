@@ -7,6 +7,11 @@ export function useStore(): LazyStore {
   return context.store;
 }
 
+export function useVariablesStore(): LazyStore {
+  const context = useContext(AppContext);
+  return context.variablesStore;
+}
+
 const RECENT_FILES_KEY = "recent_files";
 
 export function useRecentOpenedFiles(): {

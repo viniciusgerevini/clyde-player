@@ -2,7 +2,7 @@ import { Group, Layout, LayoutChangedMeta, Panel, Separator } from "react-resiza
 import { useDialogueFileHandler, ParseState } from "../file/useFileHandler";
 import { PlayerActionBar } from "./ActionBar";
 import { Interpreter, DialogueOptions, DialogueLine, DialogueEnd } from "@clyde-lang/interpreter";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   BugIcon,
   CircleCheckIcon,
@@ -15,6 +15,7 @@ import { UnexpectedTokenError } from "@clyde-lang/parser";
 import { AppSettings, useSettings } from "../store/useSettings";
 import { DebugPanel } from "../debugger/DebugPanel";
 import { TimelineEventTitles, useEventTimeline } from "../debugger/useEventTimeline";
+import { useExternalVariables } from "../store/useExternalVariables";
 
 interface PlayerParams {
   dialoguePath: string;
@@ -54,6 +55,8 @@ export function Player({ dialoguePath, onParseFinished }: PlayerParams) {
   const fileHandler = useDialogueFileHandler(dialoguePath, watchChanges);
   const bottomRef = useRef<null | HTMLDivElement>(null);
   const { events, addEventToTimeline, clearTimelineEvents } = useEventTimeline();
+
+  const { externalVariablesRef, setVariable } = useExternalVariables();
 
   const defaultLayout = useMemo(() => {
     try {
@@ -103,6 +106,21 @@ export function Player({ dialoguePath, onParseFinished }: PlayerParams) {
   useEffect(() => {
     onParseFinished(parseState);
   }, [parseState]);
+
+  useEffect(() => {
+    interpreter.onExternalVariableFetch((name: string) => {
+      return externalVariablesRef.current[name]?.value;
+    });
+
+    interpreter.onExternalVariableUpdate((name: string, value: any) => {
+      setVariable(name, value);
+      addEventToTimeline({
+        timestamp: Date.now(),
+        title: TimelineEventTitles.EXTERNAL_VARIABLE_CHANGED,
+        description: `name: ${name}, value: ${value}`,
+      });
+    });
+  }, [interpreter, setVariable]);
 
   const scrollToBottom = () => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });

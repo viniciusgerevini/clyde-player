@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Group, Layout, LayoutChangedMeta, Panel, Separator } from "react-resizable-panels";
+import { Group, Panel, Separator } from "react-resizable-panels";
 import {
   CheckIcon,
   GripVerticalIcon,
@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { InterpreterInstance, EventType } from "@clyde-lang/interpreter";
 import { TimelineEvent, TimelineEventTitles } from "./useEventTimeline";
+import { useExternalVariables } from "../store/useExternalVariables";
 
 interface DebugPanelParams {
   interpreter: InterpreterInstance;
@@ -35,10 +36,11 @@ export function DebugPanel({
   const variablesRef = useRef<VariablesList>({});
   const [variables, setVariables] = useState<VariablesList>({});
 
-  // TODO implement external variables
-  const externalVariables: VariablesList = {
-    banana: { type: "string", value: "123" },
-  };
+  const {
+    allVariables: externalVariables,
+    setVariable: setExternalVariable,
+    removeVariable: removeExternalVariable,
+  } = useExternalVariables();
 
   useEffect(() => {
     const data = interpreter.getData();
@@ -103,15 +105,14 @@ export function DebugPanel({
     interpreter.setVariable(name, undefined);
   };
 
-  const onLayoutChanged = (layout: Layout, meta: LayoutChangedMeta) => {
-    if (meta.isUserInteraction) {
-      console.log("ALRIGHT< SAVE", layout);
-      setPlayerDebuggerLayout(JSON.stringify(layout));
-    }
+  const onExternalVariableUpdate = (params: { name: string; value: any; type: string }) => {
+    setExternalVariable(params.name, params.value);
   };
 
-  // TODO save external variables
-  // TODO load external variables to  dialogue when loaded
+  const onExternalVariableDeleted = (name: string) => {
+    removeExternalVariable(name);
+  };
+
   return (
     <div className="min-h-30 h-full overflow-hidden">
       <Group id="dbgs" orientation="horizontal">
@@ -139,9 +140,9 @@ export function DebugPanel({
               />
               <VariableTabContent
                 variables={externalVariables}
-                onChange={() => {}}
-                onDeleted={() => {}}
-                isEnabled={isDialogueAvailable}
+                onChange={onExternalVariableUpdate}
+                onDeleted={onExternalVariableDeleted}
+                isEnabled={true}
               />
             </div>
           </div>
@@ -255,6 +256,11 @@ function VariableRow({
   const [value, setValue] = useState(variableValue);
   const [varType, setVarType] = useState(variableType);
   const [isEditing, setIsEditing] = useState(isNew);
+
+  useEffect(() => {
+    setVarType(variableType);
+    setValue(variableValue);
+  }, [variableValue]);
 
   const cancelChanges = () => {
     if (isNew) {
@@ -504,7 +510,7 @@ function EventDate({ timestamp }: { timestamp: number }) {
     date.getSeconds().toString().padStart(2, "0"),
   ];
 
-  return <>{`${(dateParts.join("-"))} ${(hourParts.join(":"))}`}</>;
+  return <>{`${dateParts.join("-")} ${hourParts.join(":")}`}</>;
 }
 
 function EventIcon({ title }: { title: string }) {
@@ -514,7 +520,7 @@ function EventIcon({ title }: { title: string }) {
     icon = <SparkleIcon size={iconSize} />;
   }
 
-  if (title === TimelineEventTitles.VARIABLE_CHANGED) {
+  if (title === TimelineEventTitles.VARIABLE_CHANGED || title === TimelineEventTitles.EXTERNAL_VARIABLE_CHANGED) {
     icon = <VariableIcon size={iconSize} />;
   }
 

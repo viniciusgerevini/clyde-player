@@ -6,6 +6,7 @@ export enum TimelineEventTitles {
   DIALOGUE_LOADED = "dialogue loaded",
   EVENT_TRIGGERED = "event triggered",
   VARIABLE_CHANGED = "variable changed",
+  EXTERNAL_VARIABLE_CHANGED = "external variable changed",
 }
 
 export interface TimelineEvent {
