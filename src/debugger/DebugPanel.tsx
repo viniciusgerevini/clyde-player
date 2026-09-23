@@ -207,6 +207,7 @@ function VariableTabContent({
                     className="btn btn-sm btn-ghost"
                     disabled={isAddingNew || !isEnabled}
                     onClick={() => setIsAddingNew(true)}
+                    title="Add variable"
                   >
                     <SquarePlusIcon size={16} />
                   </button>
