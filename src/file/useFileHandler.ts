@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from "react";
-import { readTextFile, UnwatchFn, watch } from "@tauri-apps/plugin-fs";
+import { useCallback, useEffect, useState } from "react";
+import { readTextFile } from "@tauri-apps/plugin-fs";
 import { parse, ClydeDocumentRoot, UnexpectedTokenError } from "@clyde-lang/parser";
 import { useDebouncedCallback } from "use-debounce";
+import { useWatchFile } from "./useWatchFile";
 
 interface DialogueFileHandler {
   getContent: () => string;
@@ -26,14 +27,16 @@ export function useDialogueFileHandler(
   const [parsedDocument, setParsedDocument] = useState<ClydeDocumentRoot>(new ClydeDocumentRoot());
   const [lastError, setParseError] = useState<UnexpectedTokenError | Error | undefined>();
   const [parseState, setParseState] = useState<ParseState>(ParseState.NOT_PARSED);
-  const shouldWatchChanges = useRef(watchChanges);
-  shouldWatchChanges.current = watchChanges;
 
   const loadFileDebounced = useDebouncedCallback(async (filePath: string) => {
     try {
       const content = await readTextFile(filePath);
-      setFileContent(content);
 
+      if (content === fileContent) {
+        return;
+      }
+
+      setFileContent(content);
       setParseState(ParseState.PARSING);
 
       const doc = parse(content);
@@ -47,39 +50,24 @@ export function useDialogueFileHandler(
     }
   }, 300);
 
+  const watchFileCallback = useCallback(() => {
+    setParseState(ParseState.NOT_PARSED);
+    loadFileDebounced(filePath);
+  }, [filePath]);
+
   useEffect(() => {
-    if (!filePath) {
+    if (filePath === "") {
       return;
     }
 
-    setParseState(ParseState.NOT_PARSED);
-
     loadFileDebounced(filePath);
+  }, [filePath, watchChanges]);
 
-    let unregister: UnwatchFn | void;
-
-    (async () => {
-      unregister = await watch(
-        filePath,
-        (_event) => {
-          if (shouldWatchChanges.current) {
-            loadFileDebounced(filePath);
-          }
-        },
-        {
-          delayMs: 200,
-        },
-      ).catch((e) => {
-        console.error("Error while watching file", e);
-      });
-    })();
-
-    return () => {
-      if (unregister) {
-        unregister();
-      }
-    };
-  }, [filePath]);
+  useWatchFile({
+    filePath,
+    callback: watchFileCallback,
+    skip: !watchChanges,
+  });
 
   return {
     getContent() {

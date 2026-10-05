@@ -16,7 +16,7 @@
       ]
     },
     "fs:default",
-    "fs:allow-watch",
+    "fs:allow-app-meta",
     "store:default",
     "core:webview:allow-set-webview-zoom",
     "core:window:allow-show",
