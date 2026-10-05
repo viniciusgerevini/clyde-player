@@ -8,7 +8,12 @@ interface UseWatchFileParams {
   skip?: boolean;
 }
 
-export function useWatchFile({ filePath, callback, waitTime = 500, skip = false}: UseWatchFileParams) {
+export function useWatchFile({
+  filePath,
+  callback,
+  waitTime = 500,
+  skip = false,
+}: UseWatchFileParams) {
   const changeTime = useRef(-1);
 
   useEffect(() => {
@@ -22,7 +27,7 @@ export function useWatchFile({ filePath, callback, waitTime = 500, skip = false}
     const scheduleTimeout = () => {
       timeout = setTimeout(async () => {
         try {
-          const fileInfo = await stat(filePath)
+          const fileInfo = await stat(filePath);
           if (fileInfo.mtime && changeTime.current !== fileInfo.mtime.getTime()) {
             changeTime.current = fileInfo.mtime.getTime();
             callback();
@@ -42,4 +47,4 @@ export function useWatchFile({ filePath, callback, waitTime = 500, skip = false}
       }
     };
   }, [filePath, callback, waitTime, skip]);
-};
+}

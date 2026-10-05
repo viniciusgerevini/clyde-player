@@ -21,4 +21,3 @@ Even though I'm happy to accept impromptu pull requests, it's better to open an 
 
 - Make sure your changes are covered by automated tests when relevant.
 - Include a description of the problem being solved, a link to the issue if it exists, and any details you think might help with the review, like use-cases, usage instructions, and alternative approaches considered.
-

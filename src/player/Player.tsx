@@ -260,7 +260,12 @@ export function Player({ dialoguePath, onParseFinished }: PlayerParams) {
   return (
     <div className="flex flex-col grow overflow-hidden">
       <Group orientation="vertical" defaultLayout={defaultLayout} onLayoutChanged={onLayoutChanged}>
-        <Panel id="pp" minSize={30} className="flex flex-col grow overflow-hidden">
+        <Panel
+          id="pp"
+          minSize={30}
+          className="flex flex-col grow overflow-hidden"
+          style={{ overflow: "hidden" }}
+        >
           <PlayerActionBar
             isDialogueAvailable={isDialogueAvailable}
             hasDialogueEnded={hasEnded}
