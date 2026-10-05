@@ -73,6 +73,7 @@ export function Player({ dialoguePath, onParseFinished }: PlayerParams) {
   const parsedDoc = fileHandler.getParsedDocument();
   const parseError = fileHandler.getParseError();
   const interpreter = useMemo(() => {
+    console.log("interpreter");
     return Interpreter(parsedDoc);
   }, [parsedDoc]);
 
@@ -98,6 +99,7 @@ export function Player({ dialoguePath, onParseFinished }: PlayerParams) {
 
   useEffect(() => {
     if (currentDialoguePath !== "" && currentDialoguePath === dialoguePath) {
+      console.log(currentDialoguePath, " DP ", dialoguePath, parsedDoc);
       addToEntries({ type: "event", text: "Dialogue Loaded" });
       addEventToTimeline({ timestamp: Date.now(), title: TimelineEventTitles.DIALOGUE_LOADED });
     }
