@@ -51,7 +51,6 @@ export function useDialogueFileHandler(
   }, 300);
 
   const watchFileCallback = useCallback(() => {
-    setParseState(ParseState.NOT_PARSED);
     loadFileDebounced(filePath);
   }, [filePath]);
 
