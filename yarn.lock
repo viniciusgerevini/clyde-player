@@ -464,6 +464,11 @@
   resolved "https://registry.yarnpkg.com/@tauri-apps/api/-/api-2.11.1.tgz#cd6b13fc26403ca095a02e39ecdbec8048d2872d"
   integrity sha512-M2FPuYND2m+wh5hfW9ZpSdxMPdEJovPBWwoHJmwUpysTYNHaOkVFN419m/K0LIgjb/7KU2vBgsUepJWugQCvAA==
 
+"@tauri-apps/api@^2.12.0":
+  version "2.12.1"
+  resolved "https://registry.yarnpkg.com/@tauri-apps/api/-/api-2.12.1.tgz#51dbfb830f6559dd13e808c0752ae022928d2853"
+  integrity sha512-DeyFHa3wynpyoqTDikDEDGTJIq4LQ5USfolQGRmGIWT6JMADyxZBTDa5cAdT3tDg73rUXufPaCwN7aXBos4OnQ==
+
 "@tauri-apps/cli-darwin-arm64@2.11.4":
   version "2.11.4"
   resolved "https://registry.yarnpkg.com/@tauri-apps/cli-darwin-arm64/-/cli-darwin-arm64-2.11.4.tgz#2884e6f2e62318e4ca1db0d6d3be8380dcb6c542"
@@ -550,12 +555,12 @@
   dependencies:
     "@tauri-apps/api" "^2.11.0"
 
-"@tauri-apps/plugin-opener@^2":
-  version "2.5.5"
-  resolved "https://registry.yarnpkg.com/@tauri-apps/plugin-opener/-/plugin-opener-2.5.5.tgz#ef7b9aca07cb3416575e5024b996926c43276b69"
-  integrity sha512-xvzGai5aQds8j8R8RsUK/lW6pGG50YgOYIPLzvkqmkwAj7dfySOD7sGtejRzvVdMmv1EQfKVEFh1MvmDp8QR0g==
+"@tauri-apps/plugin-opener@~2":
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/@tauri-apps/plugin-opener/-/plugin-opener-2.7.0.tgz#14d631a70282cbc07b46f4442ba6085d2200f301"
+  integrity sha512-mBorYfVKh9Lt7s4ZFtKbMUTxBw+Y/sVmSlKCtkkoBgMTC/DIbt/kaPm67L/2djAUqDI1wbixy5OHHVmipjuGMw==
   dependencies:
-    "@tauri-apps/api" "^2.11.0"
+    "@tauri-apps/api" "^2.12.0"
 
 "@tauri-apps/plugin-store@~2":
   version "2.4.5"

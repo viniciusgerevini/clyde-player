@@ -1,3 +1,5 @@
+import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
+
 import { useState } from "react";
 
 import {
@@ -36,6 +38,7 @@ export function PlayerActionBar({
   onBlockSelected,
 }: PlayerActionBarParams) {
   const [selectedBlock, setSelectedBlock] = useState("");
+  const [isThemeSelectorVisible, setThemeSelectorVisible] = useState(false);
 
   const onBlockSelectChanged = (blockName: string) => {
     (document.activeElement as any)?.blur();
@@ -116,15 +119,28 @@ export function PlayerActionBar({
           <DatabaseBackupIcon size={16} />
         </button>
       </div>
-      <SettingsDropdown />
+      <SettingsDropdown onThemeSelectorRequested={() => setThemeSelectorVisible(true)} />
+      {isThemeSelectorVisible && (
+        <ThemeSelector onCloseTriggered={() => setThemeSelectorVisible(false)} />
+      )}
     </div>
   );
 }
 
-function SettingsDropdown() {
+function SettingsDropdown({ onThemeSelectorRequested }: { onThemeSelectorRequested: () => void }) {
   const [watchFile, setWatchFile] = useSettings(AppSettings.WATCH_FILE);
   const [isMultiBubble, setMultiBubble] = useSettings(AppSettings.MULTI_BUBBLE);
   const [showMetadata, setShowMetadata] = useSettings(AppSettings.SHOW_METADATA);
+
+  const openAboutWindow = () => {
+    (document.activeElement as any)?.blur();
+    createAboutWindow();
+  };
+
+  const openThemeSelector = () => {
+    (document.activeElement as any)?.blur();
+    onThemeSelectorRequested();
+  };
 
   return (
     <div className="dropdown dropdown-end">
@@ -165,10 +181,32 @@ function SettingsDropdown() {
             Show metadata
           </label>
         </li>
-        <li className="pt-2">
-          <ThemeSelector />
+        <li className="border-b-1 border-base-300">
+          <button onClick={openThemeSelector}>Theme...</button>
+        </li>
+        <li className="">
+          <button onClick={openAboutWindow}>About...</button>
         </li>
       </ul>
     </div>
   );
+}
+
+async function createAboutWindow() {
+  const existing = await WebviewWindow.getByLabel("about");
+
+  if (existing) {
+    existing.setFocus();
+    return;
+  }
+
+  const aboutWindow = new WebviewWindow("about", {
+    url: "about.html",
+    title: "About - Clyde Player",
+    center: true,
+    visible: false,
+    width: 700,
+    height: 300,
+  });
+  aboutWindow.once("tauri://error", (e) => console.error(e));
 }

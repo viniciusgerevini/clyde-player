@@ -20,7 +20,7 @@
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-dialog": "~2",
     "@tauri-apps/plugin-fs": "~2",
-    "@tauri-apps/plugin-opener": "^2",
+    "@tauri-apps/plugin-opener": "~2",
     "@tauri-apps/plugin-store": "~2",
     "daisyui": "^5.7.38",
     "lucide-react": "^1.46.0",

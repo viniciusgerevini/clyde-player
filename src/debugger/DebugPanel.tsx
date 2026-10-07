@@ -21,7 +21,6 @@ interface DebugPanelParams {
   clearMemoryFlag: number;
 }
 
-// TODO fix grid (fields overlapping)
 export function DebugPanel({
   interpreter,
   isDialogueAvailable,
