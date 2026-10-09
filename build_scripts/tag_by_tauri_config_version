@@ -16,8 +16,7 @@ if [ -z "$RAW_PACKAGE_VERSION" ] || [ "$RAW_PACKAGE_VERSION" == "null" ]; then
 fi
 
 PACKAGE_VERSION=$(echo "$RAW_PACKAGE_VERSION" | sed 's/+/-/g')
-# TODO will fix this once i confirm it creates correctly
-TAG_NAME="app-${PACKAGE_VERSION}"
+TAG_NAME="app-v${PACKAGE_VERSION}"
 
 git fetch --tags --force
 
