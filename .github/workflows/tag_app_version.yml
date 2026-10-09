@@ -1,4 +1,4 @@
-name: 'tag app version'
+name: "tag app version"
 
 on:
   workflow_dispatch:
@@ -8,16 +8,16 @@ on:
 
 jobs:
   tag-version:
-      runs-on: ubuntu-latest
-      permissions:
-        contents: write
-      steps:
-        - uses: actions/checkout@v4
-          with:
-            fetch-depth: 0
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-        - name: Tag version
-          run: ./build_scripts/tag_by_tauri_config_version
-          env:
-            GIT_USER_NAME: "Github Actions"
-            GIT_USER_EMAIL: "actions@github.com"
+      - name: Tag version
+        run: ./build_scripts/tag_by_tauri_config_version
+        env:
+          GIT_USER_NAME: "Github Actions"
+          GIT_USER_EMAIL: "actions@github.com"

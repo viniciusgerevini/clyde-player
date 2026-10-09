@@ -20,10 +20,9 @@ store.get(AppSettings.THEME).then((value) => {
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-
-  <AppContext value={{ store, variablesStore }}>
-    <About />
-  </AppContext>
+    <AppContext value={{ store, variablesStore }}>
+      <About />
+    </AppContext>
   </React.StrictMode>,
 );
 
@@ -41,35 +40,47 @@ function About() {
   }, [selectedTheme]);
 
   useEffect(() => {
-getVersion().then((v) => {
-  setVersion(v);
-});
-
-
+    getVersion().then((v) => {
+      setVersion(v);
+    });
   }, []);
 
-  return <div className="flex gap-4 p-4">
-    <img src={ClydeLogoSvg} />
-    <div>
-      <h1 className="base-100 text-lg font-bold">Clyde Dialogue Player</h1>
-      <div className="mt-2 flex flex-col gap-2">
-        <div className="flex items-center gap-2">v{version} <div className="badge badge-accent">beta</div></div>
-        <div>
-The Clyde Dialogue Language and Clyde Player were created by Vinicius Gerevini (<Link href="https://thisisvini.com">thisisvini.com</Link>) and distributed under the MIT license.<br/>
-The Clyde Logo was designed by Fabiane Molon (<Link href="https://fabianemolon.com">fabianemolon.com</Link>).
-        </div>
-        <div className="flex gap-2">
-          <Link href="https://thisisvini.com/clyde/en/tools/player.html">Player documentation</Link>
-          <Link href="https://github.com/viniciusgerevini/clyde-player">Report issues</Link>
+  return (
+    <div className="flex gap-4 p-4">
+      <img src={ClydeLogoSvg} />
+      <div>
+        <h1 className="base-100 text-lg font-bold">Clyde Dialogue Player</h1>
+        <div className="mt-2 flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            v{version} <div className="badge badge-accent">beta</div>
+          </div>
+          <div>
+            The Clyde Dialogue Language and Clyde Player were created by Vinicius Gerevini (
+            <Link href="https://thisisvini.com">thisisvini.com</Link>) and distributed under the MIT
+            license.
+            <br />
+            The Clyde Logo was designed by Fabiane Molon (
+            <Link href="https://fabianemolon.com">fabianemolon.com</Link>).
+          </div>
+          <div className="flex gap-2">
+            <Link href="https://thisisvini.com/clyde/en/tools/player.html">
+              Player documentation
+            </Link>
+            <Link href="https://github.com/viniciusgerevini/clyde-player">Report issues</Link>
+          </div>
         </div>
       </div>
     </div>
-  </div>;
+  );
 }
 
-function Link({href, children}: { href: string, children: ReactNode}) {
+function Link({ href, children }: { href: string; children: ReactNode }) {
   const openLink = () => {
     openUrl(href);
   };
-  return <button className="underline text-primary cursor-pointer" onClick={openLink}>{children}</button>;
+  return (
+    <button className="underline text-primary cursor-pointer" onClick={openLink}>
+      {children}
+    </button>
+  );
 }
