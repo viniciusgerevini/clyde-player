@@ -6,6 +6,7 @@ import { Player } from "./player/Player";
 import { ParseState } from "./file/useFileHandler";
 import { AppSettings, useSettings } from "./store/useSettings";
 import { getCurrentWindow } from "@tauri-apps/api/window";
+import { AboutModal } from "./about/AboutModal";
 
 // TODO commands
 // c-n - next line
@@ -41,6 +42,7 @@ function App() {
         dialoguePath={dialogueFilePath}
         onParseFinished={(status) => setDialogueStatus(status)}
       />
+      <AboutModal/>
     </main>
   );
 }

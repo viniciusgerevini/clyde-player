@@ -1,5 +1,3 @@
-import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
-
 import { useState } from "react";
 
 import {
@@ -134,7 +132,7 @@ function SettingsDropdown({ onThemeSelectorRequested }: { onThemeSelectorRequest
 
   const openAboutWindow = () => {
     (document.activeElement as any)?.blur();
-    createAboutWindow();
+    (document.getElementById('aboutModal') as any).showModal();
   };
 
   const openThemeSelector = () => {
@@ -190,23 +188,4 @@ function SettingsDropdown({ onThemeSelectorRequested }: { onThemeSelectorRequest
       </ul>
     </div>
   );
-}
-
-async function createAboutWindow() {
-  const existing = await WebviewWindow.getByLabel("about");
-
-  if (existing) {
-    existing.setFocus();
-    return;
-  }
-
-  const aboutWindow = new WebviewWindow("about", {
-    url: "about.html",
-    title: "About - Clyde Player",
-    center: true,
-    visible: false,
-    width: 700,
-    height: 300,
-  });
-  aboutWindow.once("tauri://error", (e) => console.error(e));
 }
