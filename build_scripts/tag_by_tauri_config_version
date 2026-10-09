@@ -1,0 +1,29 @@
+#!/bin/bash
+set -eux
+
+CONF_FILE="./src-tauri/tauri.conf.json";
+
+if [ ! -f "$CONF_FILE" ]; then
+	echo "Error: tauri.conf.json not found." >&2
+	exit 1
+fi
+
+RAW_PACKAGE_VERSION=$(jq -r '.version' "$CONF_FILE")
+
+if [ -z "$RAW_PACKAGE_VERSION" ] || [ "$RAW_PACKAGE_VERSION" == "null" ]; then
+	echo "Error: Could not read version from config file, or version is null." >&2
+	exit 1
+fi
+
+PACKAGE_VERSION=$(echo "$RAW_PACKAGE_VERSION" | sed 's/+/-/g')
+# TODO will fix this once i confirm it creates correctly
+TAG_NAME="app-${PACKAGE_VERSION}"
+
+git fetch --tags --force
+
+if ! git rev-parse -q --verify "refs/tags/${TAG_NAME}" >/dev/null 2>&1; then
+	git config user.name "${GIT_USER_NAME}"
+	git config user.email "${GIT_USER_EMAIL}"
+	git tag -a "${TAG_NAME}" -m "Version ${TAG_NAME}"
+	git push origin "refs/tags/${TAG_NAME}"
+fi
