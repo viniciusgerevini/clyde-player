@@ -1,22 +1,10 @@
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { ReactNode, useEffect, useState } from "react";
-import { AppSettings, useSettings } from "../store/useSettings";
-import { getCurrentWindow } from "@tauri-apps/api/window";
 import ClydeLogoSvg from "../assets/clyde_logo.svg";
 import { getVersion } from "@tauri-apps/api/app";
 
 export function AboutModal() {
-  const [selectedTheme] = useSettings(AppSettings.THEME);
   const [version, setVersion] = useState("0.0.0");
-
-  useEffect(() => {
-    const html = document.querySelector("html");
-    html?.setAttribute("data-theme", selectedTheme);
-
-    setTimeout(() => {
-      getCurrentWindow().show();
-    }, 200);
-  }, [selectedTheme]);
 
   useEffect(() => {
     getVersion().then((v) => {

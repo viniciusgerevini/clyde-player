@@ -30,4 +30,14 @@ export default defineConfig(() => ({
       ignored: ["**/src-tauri/**"],
     },
   },
+
+  test: {
+    environment: 'jsdom',
+    setupFiles: './src/tests/setup.ts',
+    coverage: {
+      reporter: ["text", "html", "clover", "json", "lcov"],
+      include: ["src/**/*.{ts,tsx}"],
+      exclude: ["src/test/**/*"],
+    },
+  },
 }));

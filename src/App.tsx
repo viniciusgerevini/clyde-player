@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-// import { invoke } from "@tauri-apps/api/core";
 import "./App.css";
 import { FileBar } from "./file-bar";
 import { Player } from "./player/Player";

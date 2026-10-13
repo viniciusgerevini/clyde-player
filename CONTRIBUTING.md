@@ -4,7 +4,7 @@ This document summarizes the main points for people interested in contributing t
 
 ## Reporting bugs
 
-If you found a bug, please report as an issue in this repository. To help streamline the process, please include the version of the player you are using and the your operational system.
+If you found a bug, please report as an issue in this repository. To help streamline the process, please include the version of the player you are using and your operational system.
 
 ## Feature requests
 
