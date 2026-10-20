@@ -32,8 +32,8 @@ export default defineConfig(() => ({
   },
 
   test: {
-    environment: 'jsdom',
-    setupFiles: './src/tests/setup.ts',
+    environment: "jsdom",
+    setupFiles: "./src/tests/setup.ts",
     coverage: {
       reporter: ["text", "html", "clover", "json", "lcov"],
       include: ["src/**/*.{ts,tsx}"],

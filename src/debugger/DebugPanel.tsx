@@ -13,7 +13,7 @@ import { TimelineEvent, TimelineEventTitles } from "./useEventTimeline";
 import { useExternalVariables } from "../store/useExternalVariables";
 import { EventTimeline } from "./EventTimelineView";
 
-interface DebugPanelParams {
+export interface DebugPanelParams {
   interpreter: InterpreterInstance;
   isDialogueAvailable: boolean;
   events: TimelineEvent[];
@@ -109,7 +109,7 @@ export function DebugPanel({
   };
 
   return (
-    <div className="min-h-30 h-full overflow-hidden">
+    <div className="min-h-30 h-full overflow-hidden" data-testid="debugPanel">
       <Group id="dbgs" orientation="horizontal">
         <Panel id="dbl">
           <div className="tabs tabs-lift p-2 h-full">
@@ -137,6 +137,7 @@ export function DebugPanel({
               onChange={onExternalVariableUpdate}
               onDeleted={onExternalVariableDeleted}
               isEnabled={true}
+              isExternal={true}
             />
           </div>
         </Panel>
@@ -170,11 +171,13 @@ function VariableTabContent({
   onChange,
   onDeleted,
   isEnabled,
+  isExternal = false,
 }: {
   variables: VariablesList;
   onChange: (params: { name: string; value: any; type: string }) => void;
   onDeleted: (name: string) => void;
   isEnabled: boolean;
+  isExternal?: boolean;
 }) {
   const [isAddingNew, setIsAddingNew] = useState(false);
 
@@ -206,7 +209,7 @@ function VariableTabContent({
                     className="btn btn-sm btn-ghost"
                     disabled={isAddingNew || !isEnabled}
                     onClick={() => setIsAddingNew(true)}
-                    title="Add variable"
+                    title={isExternal ? "Add external variable" : "Add variable"}
                   >
                     <SquarePlusIcon size={16} />
                   </button>
@@ -330,6 +333,7 @@ function VariableRow({
       <td>
         {isEditing ? (
           <select
+            aria-label="Variable type"
             className="select"
             value={varType}
             onChange={(e) => onValueTypeChange(e.target.value)}
@@ -382,7 +386,7 @@ function VariableRow({
             <>
               <button
                 className="btn btn-sm"
-                aria-label="Edit variable"
+                aria-label={`Edit variable ${name}`}
                 title="Edit variable"
                 onClick={() => setIsEditing(true)}
               >
@@ -390,7 +394,7 @@ function VariableRow({
               </button>
               <button
                 className="btn btn-sm"
-                aria-label="Delete variable"
+                aria-label={`Delete variable ${name}`}
                 title="Delete variable"
                 onClick={deleteVariable}
               >
@@ -440,6 +444,7 @@ function VariableRowValue({
   if (variableType === "boolean") {
     return (
       <input
+        aria-label="Variable value"
         type="checkbox"
         checked={variableValue}
         className="checkbox"
@@ -451,6 +456,7 @@ function VariableRowValue({
   if (variableType === "number") {
     return (
       <input
+        aria-label="Variable value"
         type="number"
         value={variableValue}
         className="input validator"
@@ -461,6 +467,7 @@ function VariableRowValue({
 
   return (
     <input
+      aria-label="Variable value"
       type="text"
       placeholder="Value"
       className="input"

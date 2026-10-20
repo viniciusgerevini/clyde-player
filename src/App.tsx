@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import { FileBar } from "./file-bar";
+import { FileBar } from "./file-bar/FileBar";
 import { Player } from "./player/Player";
 import { ParseState } from "./file/useFileHandler";
 import { AppSettings, useSettings } from "./store/useSettings";
@@ -41,7 +41,7 @@ function App() {
         dialoguePath={dialogueFilePath}
         onParseFinished={(status) => setDialogueStatus(status)}
       />
-      <AboutModal/>
+      <AboutModal />
     </main>
   );
 }

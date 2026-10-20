@@ -48,8 +48,12 @@ export function ThemeSelector({ onCloseTriggered }: { onCloseTriggered: () => vo
   return (
     <div className="flex items-center justify-center gap-1 absolute top-0 left-0 w-full h-full">
       <div className="bg-base-100 border-1 border-base-300 p-4 rounded-md flex flex-col gap-2 relative shadow">
-        <button className="btn btn-ghost btn-xs absolute top-2 right-2">
-          <XIcon size={16} onClick={onCloseTriggered} />
+        <button
+          className="btn btn-ghost btn-xs absolute top-2 right-2"
+          aria-label="Close theme selector"
+          onClick={onCloseTriggered}
+        >
+          <XIcon size={16} />
         </button>
         <div>Theme</div>
         <div className="flex gap-2 items-center">
@@ -60,6 +64,7 @@ export function ThemeSelector({ onCloseTriggered }: { onCloseTriggered: () => vo
             <div className="bg-accent size-2 rounded-full"></div>
           </div>
           <select
+            aria-label="App Theme Selector"
             className="select theme-controller"
             value={selectedTheme}
             onChange={(e) => changeTheme(e.target.value)}

@@ -8,7 +8,6 @@ import {
   CircleCheckIcon,
   CircleXIcon,
   CircleDashedIcon,
-  CircleDotIcon,
   GripHorizontalIcon,
 } from "lucide-react";
 import { UnexpectedTokenError } from "@clyde-lang/parser";
@@ -17,7 +16,7 @@ import { DebugPanel } from "../debugger/DebugPanel";
 import { TimelineEventTitles, useEventTimeline } from "../debugger/useEventTimeline";
 import { useExternalVariables } from "../store/useExternalVariables";
 
-interface PlayerParams {
+export interface PlayerParams {
   dialoguePath: string;
   onParseFinished: (status: ParseState) => void;
 }
@@ -73,7 +72,6 @@ export function Player({ dialoguePath, onParseFinished }: PlayerParams) {
   const parsedDoc = fileHandler.getParsedDocument();
   const parseError = fileHandler.getParseError();
   const interpreter = useMemo(() => {
-    console.log("interpreter");
     return Interpreter(parsedDoc);
   }, [parsedDoc]);
 
@@ -99,7 +97,6 @@ export function Player({ dialoguePath, onParseFinished }: PlayerParams) {
 
   useEffect(() => {
     if (currentDialoguePath !== "" && currentDialoguePath === dialoguePath) {
-      console.log(currentDialoguePath, " DP ", dialoguePath, parsedDoc);
       addToEntries({ type: "event", text: "Dialogue Loaded" });
       addEventToTimeline({ timestamp: Date.now(), title: TimelineEventTitles.DIALOGUE_LOADED });
     }
@@ -169,9 +166,6 @@ export function Player({ dialoguePath, onParseFinished }: PlayerParams) {
   };
 
   const onForward = () => {
-    if (!isDialogueAvailable || isWaitingForChoice || hasEnded) {
-      return;
-    }
     let type = "line";
     const newEntries: DialogueEntry[] = [];
 
@@ -185,10 +179,6 @@ export function Player({ dialoguePath, onParseFinished }: PlayerParams) {
   };
 
   const onAutoMode = () => {
-    if (!isDialogueAvailable || hasEnded) {
-      return;
-    }
-
     let type = "line";
     const newEntries: DialogueEntry[] = [];
 
@@ -242,7 +232,7 @@ export function Player({ dialoguePath, onParseFinished }: PlayerParams) {
   };
 
   const onOptionSelected = (optionIndex: number) => {
-    if (!isWaitingForChoice) {
+    if (hasEnded) {
       return;
     }
 
@@ -269,6 +259,7 @@ export function Player({ dialoguePath, onParseFinished }: PlayerParams) {
           <PlayerActionBar
             isDialogueAvailable={isDialogueAvailable}
             hasDialogueEnded={hasEnded}
+            isWaitingForChoice={isWaitingForChoice}
             blocks={blocks}
             onBlockSelected={onBlockSelected}
             onRestart={onRestart}
@@ -277,7 +268,11 @@ export function Player({ dialoguePath, onParseFinished }: PlayerParams) {
             onAutoMode={onAutoMode}
             onClearMemory={onClearMemory}
           />
-          <div className="grow flex flex-col gap-2 overflow-y-auto scroll-smooth" onClick={onNext}>
+          <div
+            className="grow flex flex-col gap-2 overflow-y-auto scroll-smooth"
+            onClick={onNext}
+            data-testid="dialogueEntriesContainer"
+          >
             {isMultiBubble &&
               entries.map((e, i) => {
                 return (
@@ -304,7 +299,11 @@ export function Player({ dialoguePath, onParseFinished }: PlayerParams) {
             </div>
 
             <div className="tooltip" data-tip="Toggle debug panel">
-              <button className="btn btn-ghost" onClick={onToggleDebugPanel}>
+              <button
+                className="btn btn-ghost"
+                onClick={onToggleDebugPanel}
+                aria-label="Toggle debug panel"
+              >
                 <BugIcon size={16} />
               </button>
             </div>
@@ -338,14 +337,6 @@ function DialogueParsingStatus({
   status: ParseState;
   error: Error | UnexpectedTokenError | undefined;
 }) {
-  if (status === ParseState.NOT_PARSED) {
-    return (
-      <div className="flex items-center text-neutral" title="Not Parsed">
-        <CircleDashedIcon size={16} />
-      </div>
-    );
-  }
-
   if (status === ParseState.PARSED) {
     return (
       <div className="flex items-center text-success" title="Parsing successful">
@@ -355,20 +346,21 @@ function DialogueParsingStatus({
   }
 
   if (status === ParseState.PARSE_ERROR) {
+    const message = error!.message;
     return (
       <div
         className="flex items-center gap-2 text-error truncate"
-        title={`parsing error: ${error?.message || ""}`}
+        title={`parsing error: ${message}`}
       >
         <CircleXIcon size={16} />
-        {error ? error.message : "Parse error"}
+        {message}
       </div>
     );
   }
 
   return (
-    <div className="flex items-center text-warning" title="Parsing...">
-      <CircleDotIcon size={16} />
+    <div className="flex items-center text-neutral" title="Not parsed">
+      <CircleDashedIcon size={16} />
     </div>
   );
 }

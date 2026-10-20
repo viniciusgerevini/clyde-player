@@ -7,7 +7,7 @@ export function useExternalVariables(): {
   externalVariablesRef: RefObject<VariablesList>;
   allVariables: VariablesList;
   setVariable: (name: string, value: any) => void;
-  getVariable: (name: string) => any;
+  // getVariable: (name: string) => any;
   removeVariable: (name: string) => void;
 } {
   const store = useVariablesStore();
@@ -27,12 +27,12 @@ export function useExternalVariables(): {
     store.delete(name);
   }, []);
 
-  const getVariable = useCallback(
-    (name: string): any => {
-      return allVariables[name]?.value;
-    },
-    [allVariables],
-  );
+  // const getVariable = useCallback(
+  //   (name: string): any => {
+  //     return allVariables[name]?.value;
+  //   },
+  //   [allVariables],
+  // );
 
   useEffect(() => {
     const refresh = async () => {
@@ -92,7 +92,7 @@ export function useExternalVariables(): {
     externalVariablesRef,
     allVariables,
     setVariable,
-    getVariable,
+    // getVariable,
     removeVariable,
   };
 }
