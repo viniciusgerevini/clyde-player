@@ -19,5 +19,5 @@ Even though I'm happy to accept impromptu pull requests, it's better to open an 
 
 ### PR etiquette
 
-- Make sure your changes are covered by automated tests when relevant.
+- Make sure your changes are covered by automated tests for the relevant changes.
 - Include a description of the problem being solved, a link to the issue if it exists, and any details you think might help with the review, like use-cases, usage instructions, and alternative approaches considered.

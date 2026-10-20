@@ -16,7 +16,7 @@ export function EventTimeline({ events }: { events: TimelineEvent[] }) {
       {events.map((e, i) => {
         return (
           <li
-            key={`${e.timestamp}${e.title}${e.description}`}
+            key={`${e.timestamp}${e.title}${e.description}${i}`}
             data-testid={`${e.timestamp}${e.title}`}
           >
             {i > 0 && <hr />}
