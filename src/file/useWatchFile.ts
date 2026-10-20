@@ -42,9 +42,7 @@ export function useWatchFile({
     scheduleTimeout();
 
     return () => {
-      if (timeout != -1) {
-        clearTimeout(timeout);
-      }
+      clearTimeout(timeout);
     };
   }, [filePath, callback, waitTime, skip]);
 }

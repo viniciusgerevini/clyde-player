@@ -5,9 +5,7 @@ import { useDebouncedCallback } from "use-debounce";
 import { useWatchFile } from "./useWatchFile";
 
 interface DialogueFileHandler {
-  getContent: () => string;
   getParsedDocument(): ClydeDocumentRoot;
-  hasParsingError(): boolean;
   getParseError(): UnexpectedTokenError | Error | undefined;
   getParseState(): ParseState;
 }
@@ -69,14 +67,8 @@ export function useDialogueFileHandler(
   });
 
   return {
-    getContent() {
-      return fileContent;
-    },
     getParsedDocument() {
       return parsedDocument;
-    },
-    hasParsingError() {
-      return !!lastError;
     },
     getParseError() {
       return lastError;

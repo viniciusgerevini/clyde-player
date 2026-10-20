@@ -15,6 +15,7 @@ import { ThemeSelector } from "../file-bar/ThemeSelector";
 interface PlayerActionBarParams {
   isDialogueAvailable: boolean;
   hasDialogueEnded: boolean;
+  isWaitingForChoice: boolean;
   blocks: string[];
   onRestart: () => void;
   onNext: () => void;
@@ -27,6 +28,7 @@ interface PlayerActionBarParams {
 export function PlayerActionBar({
   isDialogueAvailable,
   hasDialogueEnded,
+  isWaitingForChoice,
   blocks,
   onRestart,
   onNext,
@@ -60,6 +62,7 @@ export function PlayerActionBar({
               key="default"
               className={selectedBlock === "" ? "font-bold" : ""}
               onClick={() => onBlockSelectChanged("")}
+              aria-label={`Select default block`}
             >
               <a>Default</a>
             </li>
@@ -68,6 +71,7 @@ export function PlayerActionBar({
                 key={b}
                 className={selectedBlock === b ? "font-bold" : ""}
                 onClick={() => onBlockSelectChanged(b)}
+                aria-label={`Select block ${b}`}
               >
                 <a>{b}</a>
               </li>
@@ -77,7 +81,12 @@ export function PlayerActionBar({
       </div>
 
       <div className="tooltip" data-tip="Restart">
-        <button className="btn" onClick={onRestart} disabled={!isDialogueAvailable}>
+        <button
+          className="btn"
+          onClick={onRestart}
+          disabled={!isDialogueAvailable}
+          aria-label="Restart"
+        >
           <RotateCcwIcon size={16} />
         </button>
       </div>
@@ -86,7 +95,8 @@ export function PlayerActionBar({
         <button
           className="btn"
           onClick={onNext}
-          disabled={!isDialogueAvailable || hasDialogueEnded}
+          disabled={!isDialogueAvailable || hasDialogueEnded || isWaitingForChoice}
+          aria-label="Next line"
         >
           <PlayIcon size={16} />
         </button>
@@ -96,7 +106,8 @@ export function PlayerActionBar({
         <button
           className="btn"
           onClick={onForward}
-          disabled={!isDialogueAvailable || hasDialogueEnded}
+          disabled={!isDialogueAvailable || hasDialogueEnded || isWaitingForChoice}
+          aria-label="Forward to next choice"
         >
           <FastForwardIcon size={16} />
         </button>
@@ -107,13 +118,20 @@ export function PlayerActionBar({
           className="btn"
           onClick={onAutoMode}
           disabled={!isDialogueAvailable || hasDialogueEnded}
+          aria-label="Poltergeist (auto-mode)"
         >
           <GhostIcon size={16} />
         </button>
       </div>
 
       <div className="tooltip" data-tip="Clear memory">
-        <button className="btn" onClick={onClearMemory} disabled={!isDialogueAvailable}>
+        <button
+          className="btn"
+          onClick={onClearMemory}
+          disabled={!isDialogueAvailable}
+
+          aria-label="Clear memory"
+        >
           <DatabaseBackupIcon size={16} />
         </button>
       </div>
@@ -132,7 +150,7 @@ function SettingsDropdown({ onThemeSelectorRequested }: { onThemeSelectorRequest
 
   const openAboutWindow = () => {
     (document.activeElement as any)?.blur();
-    (document.getElementById('aboutModal') as any).showModal();
+    (document.getElementById("aboutModal") as any).showModal();
   };
 
   const openThemeSelector = () => {
@@ -142,7 +160,7 @@ function SettingsDropdown({ onThemeSelectorRequested }: { onThemeSelectorRequest
 
   return (
     <div className="dropdown dropdown-end">
-      <div tabIndex={0} role="button" className="btn">
+      <div tabIndex={0} role="button" className="btn" aria-label="Action Bar Overflow Menu Button">
         <EllipsisVerticalIcon />
       </div>
       <ul tabIndex={-1} className="dropdown-content menu bg-base-100 rounded-box z-1 p-2 shadow-sm">
@@ -153,6 +171,7 @@ function SettingsDropdown({ onThemeSelectorRequested }: { onThemeSelectorRequest
               className="toggle toggle-sm"
               checked={watchFile}
               onChange={(e) => setWatchFile(e.target.checked)}
+              aria-label="Toggle watch for file changes"
             />
             Watch for file changes
           </label>
@@ -164,6 +183,7 @@ function SettingsDropdown({ onThemeSelectorRequested }: { onThemeSelectorRequest
               className="toggle toggle-sm"
               checked={isMultiBubble}
               onChange={(e) => setMultiBubble(e.target.checked)}
+              aria-label="Toggle multi-bubble mode"
             />
             Toggle multi-bubble mode
           </label>
@@ -175,15 +195,20 @@ function SettingsDropdown({ onThemeSelectorRequested }: { onThemeSelectorRequest
               className="toggle toggle-sm"
               checked={showMetadata}
               onChange={(e) => setShowMetadata(e.target.checked)}
+              aria-label="Toggle show metadata"
             />
             Show metadata
           </label>
         </li>
         <li className="border-b-1 border-base-300">
-          <button onClick={openThemeSelector}>Theme...</button>
+          <button onClick={openThemeSelector} aria-label="Open theme selector">
+            Theme...
+          </button>
         </li>
         <li className="">
-          <button onClick={openAboutWindow}>About...</button>
+          <button onClick={openAboutWindow} aria-label="Open about modal">
+            About...
+          </button>
         </li>
       </ul>
     </div>

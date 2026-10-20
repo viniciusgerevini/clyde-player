@@ -15,7 +15,10 @@ export function EventTimeline({ events }: { events: TimelineEvent[] }) {
     <ul className="timeline timeline-vertical">
       {events.map((e, i) => {
         return (
-          <li key={`${e.timestamp}${e.title}${e.description}`}>
+          <li
+            key={`${e.timestamp}${e.title}${e.description}${i}`}
+            data-testid={`${e.timestamp}${e.title}`}
+          >
             {i > 0 && <hr />}
             <div className="timeline-start text-xs">
               <EventDate timestamp={e.timestamp} />
